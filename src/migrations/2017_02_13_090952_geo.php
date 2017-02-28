@@ -23,6 +23,7 @@ class Geo extends Migration
             $table->json('alternames');
             $table->char('country', 2);
             $table->char('level', 10);
+            $table->bigInteger('population');
             $table->decimal('lat',9,6);
             $table->decimal('long',9,6);
         });

@@ -8,7 +8,7 @@ use igaster\laravel_cities\commands\helpers\geoCollection;
 class parseGeoFile extends Command
 {
     protected $signature = 'geo:load {country?} {--append}';
-    protected $description = 'Load + Parse + Save to DB a geo file.';
+    protected $description = 'Load + Parse + Save to DB a geodata file.';
 
     private $pdo;
 
@@ -148,7 +148,7 @@ class parseGeoFile extends Command
 
         // Store Tree in DB
         $this->info("Writing to DB</info>");
-        $stmt = $this->pdo->prepare("INSERT INTO geo (`id`, `parent_id`, `left`, `right`, `depth`, `geoid`, `name`, `alternames`, `country`, `level`, `lat`, `long`) VALUES (:id, :parent_id, :left, :right, :depth, :geoid, :name, :alternames, :country, :level, :lat, :long)");
+        $stmt = $this->pdo->prepare("INSERT INTO geo (`id`, `parent_id`, `left`, `right`, `depth`, `geoid`, `name`, `alternames`, `country`, `level`, `population`, `lat`, `long`) VALUES (:id, :parent_id, :left, :right, :depth, :geoid, :name, :alternames, :country, :level, :population, :lat, :long)");
 
 
         $count = 0;
@@ -166,6 +166,7 @@ class parseGeoFile extends Command
                 ':alternames'   => $item->data[3],
                 ':country'      => $item->data[8],
                 ':level'        => $item->data[7],
+                ':population'   => $item->data[14],
                 ':lat'          => $item->data[4],
                 ':long'         => $item->data[5]
             ]) === false){
