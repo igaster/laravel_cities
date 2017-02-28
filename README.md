@@ -20,15 +20,19 @@ What you dont get:
 2. Save to your app's storage folder ('\storage')
 3. Add Service Provider in app.php:
 
+```php
     'providers' => [
     	//...
         igaster\laravel_cities\geoServiceProvider::class,
 	];
+```
 
-4. Run 
+4. Migrate and Seed. Run:
 
+```
 	artisan migrate
 	artisan geo:load
+```
 
 Note: If you don't want all the countries, you can download only country specific files (eg US.txt) and import each one of them with:
 
