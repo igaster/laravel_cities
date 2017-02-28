@@ -1,0 +1,5 @@
+[2017-02-28 11:52:31] name.ERROR: BINDINGS ["%Κέρκ%"] []
+[2017-02-28 11:53:56] name.INFO: select * from `geo` where LOWER(alternames) LIKE ? [] []
+[2017-02-28 11:53:56] name.ERROR: BINDINGS ["%Κέρκ%"] []
+[2017-02-28 11:55:55] name.INFO: select * from `geo` where LOWER(alternames) LIKE ? [] []
+[2017-02-28 11:55:55] name.ERROR: BINDINGS ["%κέρκ%"] []

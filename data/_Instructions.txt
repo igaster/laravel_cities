@@ -1,0 +1,66 @@
+Tab Seperated Files:
+
+=======[ countryInfo.txt ]=======
+#ISO	ISO3	ISO-Numeric		fips	Country	Capital	Area(in sq km)	Population	Continent	tld		CurrencyCode	CurrencyName	Phone	Postal Code Format	Postal Code Regex	Languages		geonameid	neighbours	EquivalentFipsCode
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+GR		GRC		300				GR		Greece	Athens	131940			11000000	EU			.gr		EUR				Euro			30		### ##				^(\d{5})$			el-GR,en,fr		390903		AL,MK,TR,BG	
+....
+
+
+=======[ admin1CodesASCII.txt: ]=======
+concatenated.codes 		name 						asciiname 					geonameId
+-----------------------------------------------------------------------------------------
+GR.736572				Mount Athos					Mount Athos					736572
+GR.ESYE31				Attica						Attica						6692632
+GR.ESYE24				Central Greece				Central Greece				6697800
+GR.ESYE12				Central Macedonia			Central Macedonia			6697801
+GR.ESYE43				Crete						Crete						6697802
+GR.ESYE11				East Macedonia and Thrace	East Macedonia and Thrace	6697803
+GR.ESYE21				Epirus						Epirus						6697804
+GR.ESYE22				Ionian Islands				Ionian Islands				6697805
+GR.ESYE41				North Aegean				North Aegean				6697806
+GR.ESYE25				Peloponnese					Peloponnese					6697807
+GR.ESYE42				South Aegean				South Aegean				6697808
+GR.ESYE14				Thessaly					Thessaly					6697809
+GR.ESYE23				West Greece					West Greece					6697810
+GR.ESYE13				West Macedonia				West Macedonia				6697811
+
+=======[ admin2Codes.txt ]=======
+concatenated.codes 		name 						asciiname 					geonameId
+-----------------------------------------------------------------------------------------
+GR.ESYE22.28			Nomós Zakýnthou				Nomos Zakynthou				251276
+GR.ESYE22.26			Lefkada						Lefkada						258445
+GR.ESYE22.27			Nomós Kefallinías			Nomos Kefallinias			260310
+GR.ESYE22.25			Nomós Kerkýras				Nomos Kerkyras				2463676
+
+
+=======[ allCountries.txt ]=======
+
+------------+-------------------+-------------------+-------------------------------+-----------+-----------+---------------+---------------+---------------+-------+---------------+---------------+---------------+---------------+-----------+-----------+-------+---------------+-----------------------
+geonameid	|name				|asciiname			|alternatenames					|latitude	|longitude	|feature class	|feature code	|country code	|cc2	|admin1 code	|admin2 code	|admin3 code	|admin4 code	|population	|elevation	|dem	|timezone		|modification date
+------------+-------------------+-------------------+-------------------------------+-----------+-----------+---------------+---------------+---------------+-------+---------------+---------------+---------------+---------------+-----------+-----------+-------+---------------+-----------------------
+390903		|Hellenic Republic	|Hellenic Republic	|Ellada,Ellas					|39			|22			|A				|PCLI			|GR				|		|00				|				|				|				|11000000	|			|644	|Europe/Athens	|2016-02-02
+6697805		|Ionian Islands		|Ionian Islands		|Iles Ioniennes,Ionia Nisia		|37.79299	|20.78305	|A				|ADM1			|GR				|		|ESYE22			|				|				|				|212984		|			|-9999	|Europe/Athens	|2016-12-27
+2463676		|Nomós Kerkýras		|Nomos Kerkyras		|Corfu,Kerkira,Νομός Κερκύρας	|39.66667	|19.75		|A				|ADM2			|GR				|		|ESYE22			|25				|				|				|113658		|			|150	|Europe/Athens	|2013-12-19
+8133855		|Dimos Corfu		|Dimos Corfu		|Kerkyras,Κέρκυρα,Κέρκυρας		|39.64099	|19.83588	|A				|ADM3			|GR				|		|ESYE22			|25				|9118			|				|108652		|			|65		|Europe/Athens	|2012-02-28
+258427		|Lefkímmi			|Lefkimmi			|Agioi Theodoroi,Λευκίμμη		|39.42336	|20.07094	|P				|PPL			|GR				|		|ESYE22			|25				|9118			|				|2935		|			|21		|Europe/Athens	|2014-10-01
+
+
+
+feature code 	eg
+PCLI			Hellenic Republic
+ADM1 			Ionian Islands
+ADM2 			Nomos Kerkyras
+ADM3			Dimos Corfu
+
+=======[ hierarchy.txt ]=======
+9408658	390903	un m49 region			(Rectangle?) - Greece
+.....
+390903	6697805	ADM 					Greece -> Ionian
+390903	6697808	ADM 					Greece -> South Aigaion
+....
+6697805	251276	ADM 					Ionian -> Zakinthos
+6697805	2463676	ADM 					Ionian -> Kerkyra
+....
+2463676	8133911	ADM 					Kerkyra -> Dimos Paxoi
+2463676	8133855	ADM 					Kerkyra -> Dimos Corfu
