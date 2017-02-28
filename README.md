@@ -19,12 +19,14 @@ What you dont get:
 1. Download & unzip "hieararcy.txt" & "allCountries.txt" from geonames.org (http://download.geonames.org/export/dump)
 2. Save to your app's storage folder ('\storage')
 3. Add Service Provider in app.php:
+
     'providers' => [
     	//...
         igaster\laravel_cities\geoServiceProvider::class,
 	];
 
 4. Run 
+
 	artisan migrate
 	artisan geo:load
 
