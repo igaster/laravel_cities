@@ -69,7 +69,8 @@ $geo2->isDescendantOf($geo1);	// (Bool) Check if $geo2 is Descentant of $geo1
 
 ## Query scopes (Use them to Build custom queries)
 ```php
-geo::level($level);		// Filter Administration level: geo::LEVEL_COUNTRY, geo::LEVEL_CAPITAL, geo::LEVEL_1, geo::LEVEL_2, geo::LEVEL_3
+geo::level($level);		// Filter by Administration level: 
+                        //geo::LEVEL_COUNTRY, geo::LEVEL_CAPITAL, geo::LEVEL_1, geo::LEVEL_2, geo::LEVEL_3
 geo::country('US');		// (Shortcut) Items that belongs to country US 
 geo::capital();			// (Shortcut) Items that are capitals
 geo::searchAllNames($name); 	// Items that conain $name in name OR alternames (Case InSensitive)
@@ -99,13 +100,13 @@ geo::getCountry('GR')
 
 This package defines some API routes that can be used to query the DB through simple HTTP requests:
 
-| URL Endpoind (GET)                | Returns                                                    | Type     |
-|-----------------------------------|------------------------------------------------------------|----------|
-|api/geo/search/{name}/{parent-id?} | Search of items containing name, (and belong to parent-id) | array    |
-|api/geo/item/{id}                  | Get item by id                                             | geo item |
-|api/geo/children/{id}              | Get children of item                                       | array    |
-|api/geo/parent/{id}                | Get parent of item                                         | geo item |
-|api/geo/country/{code}             | get country by two-letter code                             | geo item |
-|api/geo/countries                  | list of countries                                          | array    |
+| URL Endpoind (GET)                | Returns                                                   | Type     |
+|-----------------------------------|-----------------------------------------------------------|----------|
+|api/geo/search/{name}/{parent-id?} | Search items containing 'name', (and belong to parent-id) | array    |
+|api/geo/item/{id}                  | Get item by id                                            | geo item |
+|api/geo/children/{id}              | Get children of item                                      | array    |
+|api/geo/parent/{id}                | Get parent of item                                        | geo item |
+|api/geo/country/{code}             | get country by two-letter code                            | geo item |
+|api/geo/countries                  | list of countries                                         | array    |
 
 
