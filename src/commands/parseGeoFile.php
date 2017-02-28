@@ -7,8 +7,8 @@ use igaster\laravel_cities\commands\helpers\geoCollection;
 
 class parseGeoFile extends Command
 {
-    protected $signature = 'geo:parse {country?} {--append}';
-    protected $description = 'Load + Parse + Save to DB Sa geo file.';
+    protected $signature = 'geo:load {country?} {--append}';
+    protected $description = 'Load + Parse + Save to DB a geo file.';
 
     private $pdo;
 

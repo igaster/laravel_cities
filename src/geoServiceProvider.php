@@ -32,7 +32,7 @@ class geoServiceProvider extends ServiceProvider
         // Register Commands
         if ($this->app->runningInConsole()) {
             $this->commands([
-                \igaster\laravel_cities\commands\truncTable::class,
+                // \igaster\laravel_cities\commands\truncTable::class,
                 \igaster\laravel_cities\commands\parseGeoFile::class,
             ]);
         }
