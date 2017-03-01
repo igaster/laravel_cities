@@ -1,5 +1,5 @@
 {
-    "name": "Igaster/LaravelCities",
+    "name": "igaster/laravel_cities",
 	"description": "Description",
     "keywords": ["laravel-5.x", "geonames.org"],
     "license": "MIT",
