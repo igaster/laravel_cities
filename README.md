@@ -116,12 +116,13 @@ This package defines some API routes that can be used to query the DB through si
 For example if you insert them in your `routes\api.php` (recomended) then the following URLs will be registered:
 
 
-| URL Endpoind (GET)                | Returns                                                   | Type     |
-|-----------------------------------|-----------------------------------------------------------|----------|
-|api/geo/search/{name}/{parent-id?} | Search items containing 'name', (and belong to parent-id) | array    |
-|api/geo/item/{id}                  | Get item by id                                            | Geo      |
-|api/geo/children/{id}              | Get children of item                                      | array    |
-|api/geo/parent/{id}                | Get parent of item                                        | Geo      |
-|api/geo/country/{code}             | get country by two-letter code                            | Geo      |
-|api/geo/countries                  | list of countries                                         | array    |
+| URL Endpoind (GET)                | Description                                               | Returns (JSON) |
+|-----------------------------------|-----------------------------------------------------------|----------------|
+|api/geo/search/{name}/{parent-id?} | Search items containing 'name', (and belong to parent-id) | Collection     |
+|api/geo/item/{id}                  | Get item by id                                            | Geo            |
+|api/geo/children/{id}              | Get children of item                                      | Collection     |
+|api/geo/parent/{id}                | Get parent of item                                        | Geo            |
+|api/geo/country/{code}             | get country by two-letter code                            | Geo            |
+|api/geo/countries                  | list of countries                                         | Collection     |
 
+The response is always a JSON representation of either a Geo class or a Collection.
