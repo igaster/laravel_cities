@@ -20,27 +20,31 @@ What you dont get:
 - Save to your app's storage folder ('\storage')
 - Install with copmoser. Run:
 
-    composer require igaster/laravel_cities
+```
+composer require igaster/laravel_cities
+```
 
 - Add Service Provider in app.php:
 
 ```php
-    'providers' => [
-    	//...
-        Igaster\LaravelCities\GeoServiceProvider::class,
-	];
+'providers' => [
+    //...
+    Igaster\LaravelCities\GeoServiceProvider::class,
+];
 ```
 
 - Migrate and Seed. Run:
 
 ```
-	artisan migrate
-	artisan geo:load
+artisan migrate
+artisan geo:load
 ```
 
 Note: If you don't want all the countries, you can download only country specific files (eg US.txt) and import each one of them with:
 
-	artisan geo:load US --append
+```
+artisan geo:load US --append
+```
 
 # Usage
 
