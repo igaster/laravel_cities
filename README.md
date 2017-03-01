@@ -52,10 +52,11 @@ artisan geo:load US --append
 ```php
 use Igaster\LaravelCities\Geo;
 
-Geo::getCountry('GR');				// Get item by Country code
+Geo::getCountries();                // Get a Collection of all countries
+Geo::getCountry('US');				// Get item by Country code
 Geo::findName('Nomos Kerkyras');	// Find item by (ascii) name
-Geo::searchAllNames('Κέρκυρα');		// Find item LIKE Name or any Alternative name
-Geo::searchAllNames('Samou', Geo::getCountry('GR'));	// ... and belongs to an item
+Geo::searchAllNames('york');		// Search item by all alternative names. Case insensitive 
+Geo::searchAllNames('vegas', Geo::getCountry('US'));	// ... and belongs to an item
 ```
 
 ## Traverse tree
