@@ -48,8 +48,9 @@ artisan geo:load US --append
 
 # Geo Model:
 
-You can use `Igaster\LaravelCities\Geo` Model to access the database. List of properties:
+You can use `Igaster\LaravelCities\Geo` Model to access the database. List of available properties:
 
+```php
 $geo->name;       // name of geographical point in plain ascii
 $geo->alternames; // Array of alternate names (Stored as Json)
 $geo->country;    // 2-letter country code (ISO-3166)
@@ -59,6 +60,7 @@ $geo->long;       // longitude in decimal degrees (wgs84)
 $geo->geoid;      // Original id from geonames.org database (geonameid)
 $geo->level;      // Administrator level code (feature code)
 // id, parent_id, left, right, depth: Used to build hierarcy tree
+```
 
 Visit http://www.geonames.org > Info, for a more detailed description.
 
