@@ -124,7 +124,7 @@ Geo::getCountry('GR')
 	->get();
 ```
 
-If you need more functionality you can extend Geo model and add your methods.
+If you need more functionality you can extend `Igaster\LaravelCities\Geo` model and add your methods.
 
 # HTTP API
 
