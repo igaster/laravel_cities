@@ -43,27 +43,27 @@ class apiTest extends abstractTest
 
 	public function testCountry(){
 		$this->assertTrue(true);
-		$result = $this->api('/api/geo/country/gr');
+		$result = $this->api('/geo/country/gr');
 		$this->assertEquals('Hellenic Republic', $result->name);
 
-		$result = $this->api('/api/geo/country/GR');
+		$result = $this->api('/geo/country/GR');
 		$this->assertEquals('Hellenic Republic', $result->name);
 	}
 
 	public function testParent(){
 		$geo = Geo::findName('Nomos Kerkyras');
-		$result = $this->api("/api/geo/parent/{$geo->id}");
+		$result = $this->api("/geo/parent/{$geo->id}");
 		$this->assertEquals('Ionian Islands', $result->name);
 	}
 
 	public function testItem(){
 		$geo = Geo::findName('Nomos Kerkyras');
-		$result = $this->api("/api/geo/item/{$geo->id}");
+		$result = $this->api("/geo/item/{$geo->id}");
 		$this->assertEquals('Nomos Kerkyras', $result->name);
 	}
 
 	public function testCountries(){
-		$result = $this->api("/api/geo/countries");
+		$result = $this->api("/geo/countries");
 		$result = array_map(function($item){
 			return $item->name;
 		}, $result);
@@ -75,7 +75,7 @@ class apiTest extends abstractTest
 
 	public function testChildren(){
 		$geo = Geo::findName('Nomos Kerkyras');
-		$result = $this->api("/api/geo/children/{$geo->id}");
+		$result = $this->api("/geo/children/{$geo->id}");
 
 		$result = array_map(function($item){
 			return $item->name;
@@ -87,7 +87,7 @@ class apiTest extends abstractTest
 
 
 	public function testSearch(){
-		$result = $this->api("/api/geo/search/κέρκΥρ");
+		$result = $this->api("/geo/search/κέρκΥρ");
 
 		$result = array_map(function($item){
 			return $item->name;
