@@ -1,4 +1,4 @@
-<?php namespace igaster\laravel_cities;
+<?php namespace Igaster\LaravelCities;
 
 class geoController extends \Illuminate\Routing\Controller {
 

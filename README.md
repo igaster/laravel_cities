@@ -16,18 +16,22 @@ What you dont get:
 
 # Instructions
 	
-1. Download & unzip "hieararcy.txt" & "allCountries.txt" from geonames.org (http://download.geonames.org/export/dump)
-2. Save to your app's storage folder ('\storage')
-3. Add Service Provider in app.php:
+- Download & unzip "hieararcy.txt" & "allCountries.txt" from geonames.org (http://download.geonames.org/export/dump)
+- Save to your app's storage folder ('\storage')
+- Install with copmoser. Run:
+
+    composer require igaster/laravel_cities
+
+- Add Service Provider in app.php:
 
 ```php
     'providers' => [
     	//...
-        igaster\laravel_cities\geoServiceProvider::class,
+        Igaster\LaravelCities\geoServiceProvider::class,
 	];
 ```
 
-4. Migrate and Seed. Run:
+- Migrate and Seed. Run:
 
 ```
 	artisan migrate
@@ -42,7 +46,7 @@ Note: If you don't want all the countries, you can download only country specifi
 
 ## Searching:
 ```php
-use igaster\laravel_cities\geo;
+use Igaster\LaravelCities\geo;
 
 Geo::getCountry('GR');				// Get item by Country code
 -Geo::findName('Nomos Kerkyras');	// Find item by (ascii) name
@@ -101,10 +105,10 @@ Geo::getCountry('GR')
 This package defines some API routes that can be used to query the DB through simple HTTP requests. To use them insert in your routes file:
 
 ```php
-Geo::routesAPI();
+\Igaster\LaravelCities\Geo::ApiRoutes();
 ```
 
-For example if you insert them in your `routes/api.php` file then the following URL will be registered:
+For example if you insert them in your `routes/api.php` (recomended) file then the following URL will be registered:
 
 
 | URL Endpoind (GET)                | Returns                                                   | Type     |

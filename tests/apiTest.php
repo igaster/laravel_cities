@@ -1,6 +1,6 @@
 <?php
 
-use igaster\laravel_cities\Geo;
+use Igaster\LaravelCities\Geo;
 
 class apiTest extends abstractTest
 {
@@ -10,8 +10,12 @@ class apiTest extends abstractTest
     // -----------------------------------------------
 
     protected function getPackageProviders($app) {
+    	// Register API routes
+		Geo::ApiRoutes();
+
+		// Register Service providers
         return [
-            \igaster\laravel_cities\geoServiceProvider::class,
+            \Igaster\LaravelCities\geoServiceProvider::class,
         ];
     }
 
@@ -32,15 +36,13 @@ class apiTest extends abstractTest
     //  Tests
     // -----------------------------------------------
 
-	//-- Test: testDummy
 	public function testDummy(){
 		// dd($results->map(function($item){return $item->name;}));
 		$this->assertTrue(true);
 	}
 
-	// Route::get('search/{name}/{parent_id?}', 	'igaster\laravel_cities\geoController@search');
-
 	public function testCountry(){
+		$this->assertTrue(true);
 		$result = $this->api('/api/geo/country/gr');
 		$this->assertEquals('Hellenic Republic', $result->name);
 

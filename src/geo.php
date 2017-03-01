@@ -1,4 +1,4 @@
-<?php namespace igaster\laravel_cities;
+<?php namespace Igaster\LaravelCities;
 
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Support\Facades\Route;
@@ -171,14 +171,14 @@ class Geo extends Eloquent {
     //  Routes
     // ----------------------------------------------
 
-    public static function routesAPI(){
+    public static function ApiRoutes(){
         Route::group(['prefix' => 'geo'], function(){
-            Route::get('search/{name}/{parent_id?}',    '\igaster\laravel_cities\geoController@search');
-            Route::get('item/{id}',         '\igaster\laravel_cities\geoController@item');
-            Route::get('children/{id}',     '\igaster\laravel_cities\geoController@children');
-            Route::get('parent/{id}',       '\igaster\laravel_cities\geoController@parent');
-            Route::get('country/{code}',    '\igaster\laravel_cities\geoController@country');
-            Route::get('countries',         '\igaster\laravel_cities\geoController@countries');
+            Route::get('search/{name}/{parent_id?}',    '\Igaster\LaravelCities\geoController@search');
+            Route::get('item/{id}',         '\Igaster\LaravelCities\geoController@item');
+            Route::get('children/{id}',     '\Igaster\LaravelCities\geoController@children');
+            Route::get('parent/{id}',       '\Igaster\LaravelCities\geoController@parent');
+            Route::get('country/{code}',    '\Igaster\LaravelCities\geoController@country');
+            Route::get('countries',         '\Igaster\LaravelCities\geoController@countries');
         });
     }
 

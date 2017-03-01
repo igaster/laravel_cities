@@ -1,4 +1,4 @@
-<?php namespace igaster\laravel_cities;
+<?php namespace Igaster\LaravelCities;
 
 use Illuminate\Support\ServiceProvider;
 
@@ -24,16 +24,13 @@ class geoServiceProvider extends ServiceProvider
         $this->loadMigrationsFrom(__DIR__.'/migrations');
 
         // Load Routes
-        $this->loadRoutesFrom(__DIR__.'/routes.php');
-
-        // Load Views
-        $this->loadViewsFrom(__DIR__.'/views', 'laravel_cities');
+        // $this->loadRoutesFrom(__DIR__.'/routes.php');
 
         // Register Commands
         if ($this->app->runningInConsole()) {
             $this->commands([
-                // \igaster\laravel_cities\commands\truncTable::class,
-                \igaster\laravel_cities\commands\parseGeoFile::class,
+                // \Igaster\LaravelCities\commands\truncTable::class,
+                \Igaster\LaravelCities\commands\parseGeoFile::class,
             ]);
         }
 

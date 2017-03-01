@@ -1,4 +1,4 @@
-<?php namespace igaster\laravel_cities\commands\helpers;
+<?php namespace Igaster\LaravelCities\commands\helpers;
 
 class geoItem {
 

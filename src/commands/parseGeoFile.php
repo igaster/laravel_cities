@@ -1,8 +1,8 @@
-<?php namespace igaster\laravel_cities\commands;
+<?php namespace Igaster\LaravelCities\commands;
 
 use Illuminate\Console\Command;
-use igaster\laravel_cities\commands\helpers\geoItem;
-use igaster\laravel_cities\commands\helpers\geoCollection;
+use Igaster\LaravelCities\commands\helpers\geoItem;
+use Igaster\LaravelCities\commands\helpers\geoCollection;
 
 
 class parseGeoFile extends Command

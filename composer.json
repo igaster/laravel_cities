@@ -1,7 +1,7 @@
 {
-    "name": "igaster/laravel_cities",
+    "name": "Igaster/LaravelCities",
 	"description": "Description",
-    "keywords": ["laravel-5.x", "package"],
+    "keywords": ["laravel-5.x", "geonames.org"],
     "license": "MIT",
     "homepage": "https://github.com/igaster/laravel_cities.git",
     "authors": [
@@ -23,8 +23,8 @@
     },     
     "autoload": {
         "psr-4" : {
-            "igaster\\laravel_cities\\"          : "src/",
-            "igaster\\laravel_cities\\Tests\\"   : "tests/"            
+            "Igaster\\LaravelCities\\"          : "src/",
+            "Igaster\\LaravelCities\\Tests\\"   : "tests/"            
         }
     },
     "minimum-stability": "stable"
