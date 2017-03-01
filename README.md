@@ -4,7 +4,7 @@
 # Introduction
 
 What you get:
-- Deploy and use geonames.org (ex MaxCDN) database localy to query countries/citiew 
+- Deploy and use geonames.org (ex MaxCDN) database localy to query countries/cities
 - Get information like lattitude/longtityde, population etc 
 - Optimized [DB tree structure](https://en.wikipedia.org/wiki/Nested_set_model) for searching and traversing the tree.
 - Provides an Eloquent model (geo) with multiple query-scopes to help you build your queries.
@@ -45,6 +45,22 @@ Note: If you don't want all the countries, you can download only country specifi
 ```
 artisan geo:load US --append
 ```
+
+# Geo Model:
+
+You can use `Igaster\LaravelCities\Geo` Model to access the database. List of properties:
+
+$geo->name;       // name of geographical point in plain ascii
+$geo->alternames; // Array of alternate names (Stored as Json)
+$geo->country;    // 2-letter country code (ISO-3166)
+$geo->population; // ...
+$geo->lat;        // latitude in decimal degrees (wgs84)
+$geo->long;       // longitude in decimal degrees (wgs84)
+$geo->geoid;      // Original id from geonames.org database (geonameid)
+$geo->level;      // Administrator level code (feature code)
+// id, parent_id, left, right, depth: Used to build hierarcy tree
+
+Visit http://www.geonames.org > Info, for a more detailed description.
 
 # Usage
 
@@ -105,6 +121,8 @@ Geo::getCountry('GR')
 	->limit(3)
 	->get();
 ```
+
+If you need more functionality you can extend Geo model and add your methods.
 
 # HTTP API
 
