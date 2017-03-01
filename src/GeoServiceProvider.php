@@ -2,7 +2,7 @@
 
 use Illuminate\Support\ServiceProvider;
 
-class geoServiceProvider extends ServiceProvider
+class GeoServiceProvider extends ServiceProvider
 {
     /**
      * Register bindings in the container.

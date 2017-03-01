@@ -27,7 +27,7 @@ What you dont get:
 ```php
     'providers' => [
     	//...
-        Igaster\LaravelCities\geoServiceProvider::class,
+        Igaster\LaravelCities\GeoServiceProvider::class,
 	];
 ```
 

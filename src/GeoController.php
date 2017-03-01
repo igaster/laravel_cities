@@ -1,6 +1,6 @@
 <?php namespace Igaster\LaravelCities;
 
-class geoController extends \Illuminate\Routing\Controller {
+class GeoController extends \Illuminate\Routing\Controller {
 
 	public function item($id){
 		return \Response::json(Geo::find($id));
