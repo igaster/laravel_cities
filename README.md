@@ -46,10 +46,10 @@ Note: If you don't want all the countries, you can download only country specifi
 
 ## Searching:
 ```php
-use Igaster\LaravelCities\geo;
+use Igaster\LaravelCities\Geo;
 
 Geo::getCountry('GR');				// Get item by Country code
--Geo::findName('Nomos Kerkyras');	// Find item by (ascii) name
+Geo::findName('Nomos Kerkyras');	// Find item by (ascii) name
 Geo::searchAllNames('Κέρκυρα');		// Find item LIKE Name or any Alternative name
 Geo::searchAllNames('Samou', Geo::getCountry('GR'));	// ... and belongs to an item
 ```
