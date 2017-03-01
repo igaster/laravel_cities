@@ -1,7 +1,5 @@
 <?php
 
-use igaster\laravel_cities\geo;
-
 class dbTest extends abstractTest
 {
 

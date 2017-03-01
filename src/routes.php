@@ -9,6 +9,3 @@ Route::group(['prefix' => 'api/geo', 'middleware' => 'api'], function(){
 	Route::get('countries', 		'igaster\laravel_cities\geoController@countries');
 });
 
-Route::group(['prefix' => 'geo', 'middleware' => 'web'], function(){
-	Route::get('test/{id}', 	'igaster\laravel_cities\geoController@test');
-});

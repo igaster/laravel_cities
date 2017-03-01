@@ -1,46 +1,46 @@
 <?php
 
-use igaster\laravel_cities\geo;
+use igaster\laravel_cities\Geo;
 
 class geoTest extends abstractTest
 {
 	//-- Test: testDummy
 	public function testDummy(){
-		// $results = geo::findName('Ionian Islands')->getChildren();
+		// $results = Geo::findName('Ionian Islands')->getChildren();
 		// dd($results->map(function($item){return $item->name;}));
 		$this->assertTrue(true);
 	}
 
 	//-- Test: is instance of \igaster\laravel_cities\geo
 	public function testModel(){
-		$model = geo::create();
+		$model = Geo::create();
 		$this->reloadModel($model);
-		$this->assertInstanceOf(geo::class, $model);
+		$this->assertInstanceOf(Geo::class, $model);
 	}
 
 	//-- Test: Get the Capital of Greece
 	public function testCapitalGr(){
-		$item = geo::country('GR')->capital()->get();
+		$item = Geo::country('GR')->capital()->get();
 		$this->assertEquals(1,  $item->count());
 
-		$item = geo::country('GR')->capital()->first();
+		$item = Geo::country('GR')->capital()->first();
 		$this->assertEquals('Athens',  $item->name);
 	}
 
 	//-- Test: Get the Capital of USA
 	public function testCapitalUs(){
-		$item = geo::country('US')->capital()->get();
+		$item = Geo::country('US')->capital()->get();
 		$this->assertEquals(1,  $item->count());
 
-		$item = geo::country('US')->capital()->first();
+		$item = Geo::country('US')->capital()->first();
 		$this->assertEquals('Washington, D.C.',  $item->name);
 	}
 
 	//-- Test: isParentOf() isChildOf()
 	public function testRelationParentChildren(){
-		$geo1  = geo::findName('Ionian Islands'); 
-		$geo2 = geo::findName('Nomos Kerkyras');
-		$geo3 = geo::findName('Dimos Corfu');
+		$geo1  = Geo::findName('Ionian Islands'); 
+		$geo2 = Geo::findName('Nomos Kerkyras');
+		$geo3 = Geo::findName('Dimos Corfu');
 		
 		$this->assertTrue($geo1->isParentOf($geo2));
 		$this->assertTrue($geo2->isParentOf($geo3));
@@ -56,9 +56,9 @@ class geoTest extends abstractTest
 
 	//-- Test: isAncenstorOf() isDescendantOf()
 	public function testRelationAncenstorDescentant(){
-		$geo1  = geo::findName('Ionian Islands'); 
-		$geo2 = geo::findName('Nomos Kerkyras');
-		$geo3 = geo::findName('Dimos Corfu');
+		$geo1  = Geo::findName('Ionian Islands'); 
+		$geo2 = Geo::findName('Nomos Kerkyras');
+		$geo3 = Geo::findName('Dimos Corfu');
 		
 		$this->assertTrue($geo1->isAncenstorOf($geo2));
 		$this->assertTrue($geo2->isAncenstorOf($geo3));
@@ -73,20 +73,20 @@ class geoTest extends abstractTest
 
 	//-- Test: getChildren(), getParent(), getAncensors()
 	public function testTravelTree(){
-		$children = geo::findName('Ionian Islands')->getChildren();
+		$children = Geo::findName('Ionian Islands')->getChildren();
 
 		$this->assertTrue($children->contains('name','Nomos Kerkyras'));
 		$this->assertTrue($children->contains('name','Nomos Zakynthou'));
 		$this->assertFalse($children->contains('name','Dimos Corfu'));
 
-		$children = geo::findName('Nomos Kerkyras')->getChildren();
+		$children = Geo::findName('Nomos Kerkyras')->getChildren();
 		$this->assertFalse($children->contains('name','Nomos Zakynthou'));
 		$this->assertTrue($children->contains('name','Dimos Corfu'));
 
-		$parent = geo::findName('Nomos Kerkyras')->getParent();
+		$parent = Geo::findName('Nomos Kerkyras')->getParent();
 		$this->assertEquals('Ionian Islands', $parent->name);
 
-		$ancenstors = geo::findName('Dimos Corfu')->getAncensors();
+		$ancenstors = Geo::findName('Dimos Corfu')->getAncensors();
 
 		$this->assertEquals('Hellenic Republic', $ancenstors[0]->name);
 		$this->assertEquals('Ionian Islands', $ancenstors[1]->name);
@@ -95,12 +95,12 @@ class geoTest extends abstractTest
 
 	//-- Test: JSON field alternames returns an Array
 	public function testAlternateNamesIsArray(){
-		$this->assertInternalType('array', geo::findName('Nomos Kerkyras')->alternames);
+		$this->assertInternalType('array', Geo::findName('Nomos Kerkyras')->alternames);
 	}
 
 	//-- Test: searchNames($string)
 	public function testSearchAlternateNames(){
-		$results = geo::searchNames('Κέρκυρα');
+		$results = Geo::searchNames('Κέρκυρα');
 
 		$this->assertTrue($results->contains(function($item){
 			return $item->name=='Nomos Kerkyras';
@@ -111,7 +111,7 @@ class geoTest extends abstractTest
 		}));
 
 
-		$results = geo::searchNames('Samou');
+		$results = Geo::searchNames('Samou');
 		$this->assertTrue($results->contains(function($item){
 			return $item->name=='Nomos Samou';
 		}));
@@ -123,18 +123,18 @@ class geoTest extends abstractTest
 
 	//-- Test: searchNames($string)
 	// public function testSearchAlternateNamesNotCaseSensitive(){
-	// 	$results = geo::searchNames('ΚέΡκυΡα');
+	// 	$results = Geo::searchNames('ΚέΡκυΡα');
 
 	// 	$this->assertTrue($results->contains(function($item){
 	// 		return $item->name=='Nomos Kerkyras';
 	// 	}));
 	// }
 
-	//-- Test: geo::searchNames($string, $parent)
+	//-- Test: Geo::searchNames($string, $parent)
 	public function testSearchAlternateNamesWithParent(){
 
-		$results1 = geo::searchNames('Samou');
-		$results2 = geo::searchNames('Samou', geo::getCountry('GR'));
+		$results1 = Geo::searchNames('Samou');
+		$results2 = Geo::searchNames('Samou', Geo::getCountry('GR'));
 
 		$this->assertTrue($results1->contains(function($item){
 			return $item->name=='Nomos Samou';
@@ -156,7 +156,7 @@ class geoTest extends abstractTest
 
 	//-- Test: searchNames() return partial matches (LIKE sql operator)
 	public function testSearchAlternateNamesLikeOperator(){
-		$results = geo::searchNames('έρκ', geo::getCountry('GR'));
+		$results = Geo::searchNames('έρκ', Geo::getCountry('GR'));
 		
 		$this->assertTrue($results->contains(function($item){
 			return $item->name=='Nomos Kerkyras';
@@ -165,7 +165,7 @@ class geoTest extends abstractTest
 
 	//-- Test: getChildren()
 	public function testGetChildren(){
-		$result = geo::findName('Ionian Islands')->getChildren();
+		$result = Geo::findName('Ionian Islands')->getChildren();
 
 		$this->assertInstanceOf(\Illuminate\Support\Collection::class, $result);
 			
@@ -183,7 +183,7 @@ class geoTest extends abstractTest
 
 	//-- Test: getDescendants()
 	public function testGetDescendants(){
-		$result = geo::findName('Ionian Islands')->getDescendants();
+		$result = Geo::findName('Ionian Islands')->getDescendants();
 
 		$this->assertInstanceOf(\Illuminate\Support\Collection::class, $result);
 			

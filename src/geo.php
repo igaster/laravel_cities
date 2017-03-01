@@ -1,8 +1,9 @@
 <?php namespace igaster\laravel_cities;
 
 use Illuminate\Database\Eloquent\Model as Eloquent;
+use Illuminate\Support\Facades\Route;
 
-class geo extends Eloquent {
+class Geo extends Eloquent {
 	protected $table = 'geo';
 	protected $guarded = [];
 	public $timestamps = false;
@@ -16,7 +17,6 @@ class geo extends Eloquent {
 
     protected   $casts = [
         'alternames' => 'array',
-        // 'yyy' => 'boolean'
     ];
 
     // ----------------------------------------------
@@ -28,7 +28,7 @@ class geo extends Eloquent {
     }
 
     public function scopeCapital($query){
-        return $query->where('level','PPLC');
+        return $query->where('level',Geo::LEVEL_CAPITAL);
     }
 
     public function scopeLevel($query,$level){
@@ -44,7 +44,12 @@ class geo extends Eloquent {
     }
 
     public function scopeChildren($query){
-        return $query->where('left', '>', $this->left)->where('right', '<', $this->right)->where('depth', $this->depth+1);
+        return $query->where(function($query) 
+        {
+            $query->where('left', '>', $this->left)
+                ->where('right', '<', $this->right)
+                ->where('depth', $this->depth+1);
+        });        
     }
 
     public function scopeSearchAllNames($query,$search){
@@ -58,7 +63,7 @@ class geo extends Eloquent {
 
     }
 
-    public function scopeHasParent($query,geo $parent){
+    public function scopeHasAncestor($query,Geo $parent){
         return $query->where(function($query) use($parent)
         {
             $query->where('left', '>', $parent->left)
@@ -84,22 +89,22 @@ class geo extends Eloquent {
     // ----------------------------------------------
 
     // is imediate Child of $item ?
-    public function isChildOf(geo $item){
+    public function isChildOf(Geo $item){
         return ($this->left > $item->left) && ($this->right < $item->right) && ($this->depth == $item->depth+1);
     }
     
     // is imediate Parent of $item ?
-    public function isParentOf(geo $item){
+    public function isParentOf(Geo $item){
         return ($this->left < $item->left) && ($this->right > $item->right) && ($this->depth == $item->depth-1);
     }
 
     // is Child of $item (any depth) ?
-    public function isDescendantOf(geo $item){
+    public function isDescendantOf(Geo $item){
         return ($this->left > $item->left) && ($this->right < $item->right);
     }
 
     // is Parent of $item (any depth) ?
-    public function isAncenstorOf(geo $item){
+    public function isAncenstorOf(Geo $item){
         return ($this->left < $item->left) && ($this->right > $item->right);
     }
 
@@ -109,11 +114,11 @@ class geo extends Eloquent {
     }
 
     // search in `name` and `alternames` / return collection
-    public static function searchNames($name, geo $parent =null){
+    public static function searchNames($name, Geo $parent =null){
         $query = self::searchAllNames($name)->orderBy('name', 'ASC');
 
         if ($parent){
-            $query->hasParent($parent);
+            $query->hasAncestor($parent);
         }
 
         return $query->get();
@@ -137,7 +142,7 @@ class geo extends Eloquent {
         return self::descendants()->where('depth', $this->depth+1)->orderBy('name')->get();
     }
 
-    // get Parent (geo)
+    // get Parent (Geo)
     public function getParent(){
         return self::ancenstors()->where('depth', $this->depth-1)->first();
     }
@@ -154,13 +159,27 @@ class geo extends Eloquent {
 
     // get all Countries
     public static function getCountries(){
-        return self::level(geo::LEVEL_COUNTRY)->orderBy('name')->get();
+        return self::level(Geo::LEVEL_COUNTRY)->orderBy('name')->get();
     }
 
     // get Country by country Code (eg US,GR)
     public static function getCountry($countryCode){
-        return self::level(geo::LEVEL_COUNTRY)->country($countryCode)->first();
+        return self::level(Geo::LEVEL_COUNTRY)->country($countryCode)->first();
     }
 
+    // ----------------------------------------------
+    //  Routes
+    // ----------------------------------------------
+
+    public static function routes(){
+        Route::group(['prefix' => 'geo'], function(){
+            Route::get('search/{name}/{parent_id?}',    'igaster\laravel_cities\geoController@search');
+            Route::get('item/{id}',         'igaster\laravel_cities\geoController@item');
+            Route::get('children/{id}',     'igaster\laravel_cities\geoController@children');
+            Route::get('parent/{id}',       'igaster\laravel_cities\geoController@parent');
+            Route::get('country/{code}',    'igaster\laravel_cities\geoController@country');
+            Route::get('countries',         'igaster\laravel_cities\geoController@countries');
+        });
+    }
 
 }

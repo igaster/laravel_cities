@@ -1,6 +1,6 @@
 <?php
 
-use igaster\laravel_cities\geo;
+use igaster\laravel_cities\Geo;
 
 class apiTest extends abstractTest
 {
@@ -49,13 +49,13 @@ class apiTest extends abstractTest
 	}
 
 	public function testParent(){
-		$geo = geo::findName('Nomos Kerkyras');
+		$geo = Geo::findName('Nomos Kerkyras');
 		$result = $this->api("/api/geo/parent/{$geo->id}");
 		$this->assertEquals('Ionian Islands', $result->name);
 	}
 
 	public function testItem(){
-		$geo = geo::findName('Nomos Kerkyras');
+		$geo = Geo::findName('Nomos Kerkyras');
 		$result = $this->api("/api/geo/item/{$geo->id}");
 		$this->assertEquals('Nomos Kerkyras', $result->name);
 	}
@@ -72,7 +72,7 @@ class apiTest extends abstractTest
 
 
 	public function testChildren(){
-		$geo = geo::findName('Nomos Kerkyras');
+		$geo = Geo::findName('Nomos Kerkyras');
 		$result = $this->api("/api/geo/children/{$geo->id}");
 
 		$result = array_map(function($item){
