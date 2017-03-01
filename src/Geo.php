@@ -63,7 +63,7 @@ class Geo extends Eloquent {
 
     }
 
-    public function scopeHasAncestor($query,Geo $parent){
+    public function scopeAreDescentants($query,Geo $parent){
         return $query->where(function($query) use($parent)
         {
             $query->where('left', '>', $parent->left)
@@ -118,7 +118,7 @@ class Geo extends Eloquent {
         $query = self::searchAllNames($name)->orderBy('name', 'ASC');
 
         if ($parent){
-            $query->hasAncestor($parent);
+            $query->areDescentants($parent);
         }
 
         return $query->get();

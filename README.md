@@ -78,7 +78,8 @@ Geo::level($level);		// Filter by Administration level:
 Geo::country('US');		// (Shortcut) Items that belongs to country US 
 Geo::capital();			// (Shortcut) Items that are capitals
 Geo::searchAllNames($name); 	// Items that conain $name in name OR alternames (Case InSensitive)
-Geo::hasAncestor($geo); 		// Items that are belong to $geo
+Geo::areDescentants($geo); 		// Items that belong to $geo
+
 $geo->ancenstors();		// Items that contain $geo
 $geo->descendants();	// Items that belong to $geo
 $geo->children();		// Items that are direct children of $geo
@@ -108,7 +109,7 @@ This package defines some API routes that can be used to query the DB through si
 \Igaster\LaravelCities\Geo::ApiRoutes();
 ```
 
-For example if you insert them in your `routes\api.php` (recomended) file then the following URL will be registered:
+For example if you insert them in your `routes\api.php` (recomended) then the following URLs will be registered:
 
 
 | URL Endpoind (GET)                | Returns                                                   | Type     |
