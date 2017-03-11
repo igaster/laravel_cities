@@ -96,7 +96,7 @@ class parseGeoFile extends Command
         $this->info(" Finished Reading File. $count items loaded</info>");
 
         // Read hierarchy
-        $fileName = storage_path('allCountries.txt');
+        $fileName = storage_path('hierarchy.txt');
         $this->info("Opening File '$fileName'</info>");
         $handle = fopen($fileName, 'r');
         $filesize = filesize($fileName);
