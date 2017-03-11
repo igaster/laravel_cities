@@ -81,8 +81,8 @@ use Igaster\LaravelCities\Geo;
 Geo::getCountries();                // Get a Collection of all countries
 Geo::getCountry('US');				// Get item by Country code
 Geo::findName('Nomos Kerkyras');	// Find item by (ascii) name
-Geo::searchAllNames('york');		// Search item by all alternative names. Case insensitive 
-Geo::searchAllNames('vegas', Geo::getCountry('US'));	// ... and belongs to an item
+Geo::searchNames('york');		// Search item by all alternative names. Case insensitive 
+Geo::searchNames('vegas', Geo::getCountry('US'));	// ... and belongs to an item
 ```
 
 ## Traverse tree
@@ -108,7 +108,7 @@ Geo::level($level);		// Filter by Administration level:
                         // Geo::LEVEL_COUNTRY, Geo::LEVEL_CAPITAL, Geo::LEVEL_1, Geo::LEVEL_2, Geo::LEVEL_3
 Geo::country('US');		// (Shortcut) Items that belongs to country US 
 Geo::capital();			// (Shortcut) Items that are capitals
-Geo::searchAllNames($name); 	// Items that conain $name in name OR alternames (Case InSensitive)
+Geo::search($name); 	// Items that conain $name in name OR alternames (Case InSensitive)
 Geo::areDescentants($geo); 		// Items that belong to $geo
 
 $geo->ancenstors();		// Items that contain $geo

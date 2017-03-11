@@ -121,14 +121,14 @@ class geoTest extends abstractTest
 		}));
 	}
 
-	//-- Test: searchNames($string)
-	// public function testSearchAlternateNamesNotCaseSensitive(){
-	// 	$results = Geo::searchNames('ΚέΡκυΡα');
+	// -- Test: searchNames($string)
+	public function testSearchAlternateNamesNotCaseSensitive(){
+		$results = Geo::searchNames('έΡκυΡ');
 
-	// 	$this->assertTrue($results->contains(function($item){
-	// 		return $item->name=='Nomos Kerkyras';
-	// 	}));
-	// }
+		$this->assertTrue($results->contains(function($item){
+			return $item->name=='Nomos Kerkyras';
+		}));
+	}
 
 	//-- Test: Geo::searchNames($string, $parent)
 	public function testSearchAlternateNamesWithParent(){

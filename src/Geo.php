@@ -52,7 +52,7 @@ class Geo extends Eloquent {
         });        
     }
 
-    public function scopeSearchAllNames($query,$search){
+    public function scopeSearch($query,$search){
         $search = '%'.mb_strtolower($search).'%';
 
         return $query->where(function($query) use($search)
@@ -115,7 +115,7 @@ class Geo extends Eloquent {
 
     // search in `name` and `alternames` / return collection
     public static function searchNames($name, Geo $parent =null){
-        $query = self::searchAllNames($name)->orderBy('name', 'ASC');
+        $query = self::search($name)->orderBy('name', 'ASC');
 
         if ($parent){
             $query->areDescentants($parent);
