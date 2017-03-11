@@ -7,7 +7,7 @@ use Igaster\LaravelCities\commands\helpers\geoCollection;
 
 class parseGeoFile extends Command
 {
-    protected $signature = 'geo:load {country?} {--append}';
+    protected $signature = 'geo:seed {country?} {--append}';
     protected $description = 'Load + Parse + Save to DB a geodata file.';
 
     private $pdo;
@@ -96,7 +96,7 @@ class parseGeoFile extends Command
         $this->info(" Finished Reading File. $count items loaded</info>");
 
         // Read hierarchy
-        $fileName = realpath(__DIR__.'/../../data/hierarchy.txt');
+        $fileName = storage_path('allCountries.txt');
         $this->info("Opening File '$fileName'</info>");
         $handle = fopen($fileName, 'r');
         $filesize = filesize($fileName);

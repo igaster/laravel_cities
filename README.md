@@ -17,6 +17,8 @@ What you dont get:
 # Instructions
 	
 - Download & unzip "hieararcy.txt" & "allCountries.txt" from geonames.org (http://download.geonames.org/export/dump)
+- Save to your app's storage folder ('\storage')
+
 
 [Tip] Download on your remote server with:
 ```
@@ -24,7 +26,6 @@ wget http://download.geonames.org/export/dump/allCountries.zip && unzip allCount
 wget http://download.geonames.org/export/dump/hierarchy.zip && unzip hierarchy.zip && rm hierarchy.zip
 ```
 
-- Save to your app's storage folder ('\storage')
 - Install with copmoser. Run:
 
 ```
@@ -44,7 +45,7 @@ composer require igaster/laravel_cities
 
 ```
 artisan migrate
-artisan geo:load
+artisan geo:seed
 ```
 
 Note: If you don't want all the countries, you can download only country specific files (eg US.txt) and import each one of them with:
