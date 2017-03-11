@@ -17,6 +17,13 @@ What you dont get:
 # Instructions
 	
 - Download & unzip "hieararcy.txt" & "allCountries.txt" from geonames.org (http://download.geonames.org/export/dump)
+
+[Tip] Download on your remote server with:
+```
+wget http://download.geonames.org/export/dump/allCountries.zip && unzip allCountries.zip && rm allCountries.zip
+wget http://download.geonames.org/export/dump/hierarchy.zip && unzip hierarchy.zip && rm hierarchy.zip
+```
+
 - Save to your app's storage folder ('\storage')
 - Install with copmoser. Run:
 
