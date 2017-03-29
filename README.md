@@ -160,8 +160,16 @@ The response is always a JSON representation of either a Geo class or a Collecti
 
 A [Vue component](https://github.com/igaster/laravel_cities/blob/master/vue/geo-slect.vue) is shipped with this package that plugs into the provided API and provides an interactive way to pick a location through a series of steps. Sorry, no live demo yet, just some screenshots:
 
+Step 1: Select your location. Drop down lists loads asynchronous:
+
 ![Select Location](/docs/1.jpg?raw=true)
+
+Step 2: Reached to a destination. Path is displayed and button to edit selection:
+
 ![Finished Selection](/docs/2.jpg?raw=true)
+
+Step 3: On form submition several fields are beeing submited:
+
 ![Form Submited](/docs/3.jpg?raw=true)
 
 ### Usage Guide
