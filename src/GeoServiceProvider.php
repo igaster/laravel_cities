@@ -26,6 +26,11 @@ class GeoServiceProvider extends ServiceProvider
         // Load Routes
         // $this->loadRoutesFrom(__DIR__.'/routes.php');
 
+        $this->publishes([
+            __DIR__.'/public' => public_path(''),
+        ], 'public');
+
+
         // Register Commands
         if ($this->app->runningInConsole()) {
             $this->commands([

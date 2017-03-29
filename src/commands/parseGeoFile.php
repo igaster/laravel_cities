@@ -137,13 +137,12 @@ class parseGeoFile extends Command
         }
 
         // Store Tree in DB
-        $this->info("Writing to DB</info>");
+        $this->info("Writing in Database</info>");
         $stmt = $this->pdo->prepare("INSERT INTO geo (`id`, `parent_id`, `left`, `right`, `depth`, `name`, `alternames`, `country`, `level`, `population`, `lat`, `long`) VALUES (:id, :parent_id, :left, :right, :depth, :name, :alternames, :country, :level, :population, :lat, :long)");
 
 
-        $count = 0;
         $totalCount = count($this->geoItems->items);
-        $progressBar = new \Symfony\Component\Console\Helper\ProgressBar($this->output, 100);
+        $progressBar = new \Symfony\Component\Console\Helper\ProgressBar($this->output, $totalCount);
         foreach ($this->geoItems->items as $item) {
             if ( $stmt->execute([
                 ':id'           => $item->getId(),
@@ -161,9 +160,7 @@ class parseGeoFile extends Command
             ]) === false){
                 throw new Exception("Error in SQL : '$sql'\n".PDO::errorInfo(), 1);
             }
-
-            $progress = $count++/$totalCount*100;
-            $progressBar->setProgress($progress);
+            $progressBar->setProgress($totalCount);
         }
         $progressBar->finish();
 

@@ -1,0 +1,137 @@
+<!-- 
+
+Creates the following inputs that will be submited:
+
+	- geo-id
+	- geo-name
+	- geo-long
+	- geo-lat
+	- geo-country
+	- geo-country-code
+
+Example Usage
+
+	<form action="/submit/url" method="POST">
+		<geo-select></geo-select>
+		<input type="submit">
+	</form>
+
+-->
+<template>
+    <div>
+
+		<div v-if="finished" class='geo-breadcrumb'>
+    		<input type="hidden" name="geo-id" :value="location().id">
+    		<input type="hidden" name="geo-name" :value="location().name">
+    		<input type="hidden" name="geo-long" :value="location().long">
+    		<input type="hidden" name="geo-lat" :value="location().lat">
+    		<input type="hidden" name="geo-country" :value="country().name">
+    		<input type="hidden" name="geo-country-code" :value="location().country">
+			<div class="form-group">
+				<label>Your Location:</label><br>
+				<span class="geo-breadcrumb-item" v-for="item in path">{{item.name}}</span>				
+				<a class="btn btn-xs btn-default pull-right" href="#" @click="finished = false">Change Location...</a>
+			</div>
+		</div>
+
+		<div v-show="!finished">
+			<div class="form-group">
+				<label>Select your Location: </label>
+				<p v-if="loadingIndex == 0"><i class="fa fa-cog fa-spin"></i> Loading Countries...</p>
+				<select v-else class="form-control select2" v-model="values[0]" @change="itemSelected(0)">
+				  <option v-for="item in items[0]" :value="item.id">{{item.name}}</option>
+				</select>
+			</div>    
+
+			<div v-for="i in count" class="form-group">
+				<p v-if="loadingIndex == i"><i class="fa fa-cog fa-spin"></i> Loading...</p>
+				<div v-else>
+					<select v-if="hasItems(i)" class="form-control _select2" v-model="values[i]"  @change="itemSelected(i)">
+					  <option v-for="item in items[i]" :value="item.id">{{item.name}}</option>
+					</select>
+					<a v-else class="btn btn-xs btn-default pull-right" href="#" @click="finished = true">Confirm Location</a>
+				</div>
+			</div> 
+		</div>
+
+    </div>
+</template>
+
+<script>
+    export default {
+        data(){
+            return {
+            	count: 0,
+                items: [],
+                values: [],
+                path: [],
+                loadingIndex: null,
+                finished: false,
+            };
+        },
+		created: function () {
+			this.getChildrenOf(null,0);
+		},
+        methods: {
+			itemSelected(index) {
+				var that = this;
+				if(this.values[index]>0){
+					this.path[index]=this.items[index].find(function(item){
+						return item.id == that.values[index];
+					});
+					this.setIndex(index);
+					this.getChildrenOf(this.values[index], index+1);
+				}
+			},
+			setIndex(index){
+				this.count = index+1;
+				this.values.splice(index+1,10);
+				this.path.splice(index+1,10);
+			},
+			hasItems(index){
+				return (this.items[index] instanceof Array) && (this.items[index].length > 0);
+			},
+			location(){
+				return this.path[this.path.length-1];
+			},
+			country(){
+				return this.path[0];
+			},
+			getChildrenOf: function(id, index){
+				this.loadingIndex = index;
+
+				if(id==null)
+					var url = '/api/geo/countries'
+				else
+					var url = '/api/geo/children/'+id;
+
+				axios.get(url, {
+				}).then(response => {
+					this.items[index] = response.data;
+					this.finished = !this.hasItems(index);
+					this.loadingIndex = null;
+					this.$forceUpdate();
+				})
+				.catch(error => {
+					alert('Error');
+					console.log(error.response.data);
+				});
+			},
+        }
+    }
+</script>
+
+<style lang="scss">
+.geo-breadcrumb{
+    list-style: none;
+    .geo-breadcrumb-item {
+    	display: inline;
+		&+span:before {
+		    padding: 8px;
+		    color: black;
+			font-family: FontAwesome;
+			content: "\f0da";
+		}
+    }
+}
+</style>
