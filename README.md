@@ -9,6 +9,7 @@ What you get:
 - Optimized [DB tree structure](https://en.wikipedia.org/wiki/Nested_set_model) for searching and traversing the tree.
 - Provides an Eloquent model (geo) with multiple query-scopes to help you build your queries.
 - Exposes a simple API that you can use to create AJAX calls. (Eg search while typing etc).
+- A sample vue.js component that that can be inserted into your forms and provides a UI to pick a location
 
 What you dont get:
 - geoIP & Postalcodes (not included in free sets)
@@ -19,18 +20,17 @@ What you dont get:
 - Download & unzip "hieararcy.txt" & "allCountries.txt" from geonames.org (http://download.geonames.org/export/dump)
 - Save to your app's storage folder ('\storage')
 
-
 [Tip] Download on your remote server with:
+
 ```
+cd resources
 wget http://download.geonames.org/export/dump/allCountries.zip && unzip allCountries.zip && rm allCountries.zip
 wget http://download.geonames.org/export/dump/hierarchy.zip && unzip hierarchy.zip && rm hierarchy.zip
 ```
 
 - Install with copmoser. Run:
 
-```
-composer require igaster/laravel_cities
-```
+`composer require igaster/laravel_cities`
 
 - Add Service Provider in app.php:
 
@@ -78,12 +78,12 @@ Visit http://www.geonames.org > Info, for a more detailed description.
 ```php
 use Igaster\LaravelCities\Geo;
 
-Geo::getCountries();                // Get a Collection of all countries
-Geo::getCountry('US');				// Get item by Country code
-Geo::findName('Nomos Kerkyras');	// Find item by (ascii) name
-Geo::searchNames('york');			// Search item by all alternative names. Case insensitive 
-Geo::searchNames('vegas', Geo::getCountry('US'));	// ... and belongs to an item
-Geo::getByIds([390903,3175395]); 	// Get a Collection of items by Ids
+Geo::getCountries();               // Get a Collection of all countries
+Geo::getCountry('US');             // Get item by Country code
+Geo::findName('Nomos Kerkyras');   // Find item by (ascii) name
+Geo::searchNames('york');          // Search item by all alternative names. Case insensitive 
+Geo::searchNames('vegas', Geo::getCountry('US'));  // ... and belongs to an item
+Geo::getByIds([390903,3175395]);   // Get a Collection of items by Ids
 ```
 
 ## Traverse tree
@@ -97,24 +97,24 @@ $descendants= $geo->getDescendants();		// Get all Descentants of $geo alphabetic
 
 ## Check Hierarchy Relations:
 ```php
-$geo1->isParentOf($geo2);		// (Bool) Check if $geo2 is direct Parent of $geo1
-$geo2->isChildOf($geo1);		// (Bool) Check if $geo2 is direct Child of $geo1
-$geo1->isAncenstorOf($geo2);	// (Bool) Check if $geo2 is Ancenstor of $geo1
-$geo2->isDescendantOf($geo1);	// (Bool) Check if $geo2 is Descentant of $geo1
+$geo1->isParentOf($geo2);       // (Bool) Check if $geo2 is direct Parent of $geo1
+$geo2->isChildOf($geo1);        // (Bool) Check if $geo2 is direct Child of $geo1
+$geo1->isAncenstorOf($geo2);    // (Bool) Check if $geo2 is Ancenstor of $geo1
+$geo2->isDescendantOf($geo1);   // (Bool) Check if $geo2 is Descentant of $geo1
 ```
 
 ## Query scopes (Use them to Build custom queries)
 ```php
-Geo::level($level);		// Filter by Administration level: 
+Geo::level($level);     // Filter by Administration level: 
                         // Geo::LEVEL_COUNTRY, Geo::LEVEL_CAPITAL, Geo::LEVEL_1, Geo::LEVEL_2, Geo::LEVEL_3
-Geo::country('US');		// (Shortcut) Items that belongs to country US 
-Geo::capital();			// (Shortcut) Items that are capitals
-Geo::search($name); 	// Items that conain $name in name OR alternames (Case InSensitive)
-Geo::areDescentants($geo); 		// Items that belong to $geo
+Geo::country('US');     // (Shortcut) Items that belongs to country US 
+Geo::capital();         // (Shortcut) Items that are capitals
+Geo::search($name);     // Items that conain $name in name OR alternames (Case InSensitive)
+Geo::areDescentants($geo);   // Items that belong to $geo
 
-$geo->ancenstors();		// Items that contain $geo
-$geo->descendants();	// Items that belong to $geo
-$geo->children();		// Items that are direct children of $geo
+$geo->ancenstors();     // Items that contain $geo
+$geo->descendants();    // Items that belong to $geo
+$geo->children();       // Items that are direct children of $geo
 
 
 //--Scope usage Examples:
