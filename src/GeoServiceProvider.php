@@ -27,8 +27,8 @@ class GeoServiceProvider extends ServiceProvider
         // $this->loadRoutesFrom(__DIR__.'/routes.php');
 
         $this->publishes([
-            __DIR__.'/public' => public_path(''),
-        ], 'public');
+            __DIR__.'/vue' => resource_path('LaravelCities'),
+        ], 'vue');
 
 
         // Register Commands

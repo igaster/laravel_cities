@@ -155,3 +155,40 @@ For example if you insert them in your `routes\api.php` (recomended) then the fo
 |api/geo/countries                  | list of countries                                         | Collection     |
 
 The response is always a JSON representation of either a Geo class or a Collection.
+
+# Vue Component
+
+A vue.js component is shipped with this package that plugs into the provided API and provides an interactive way to pick a location through a series of steps. Assuming that you are using Webpack to compile your assets, and you have included `vue-app.js`:
+
+### Add in your application
+
+In your main vue-app.js file add the component declaration:
+
+`Vue.component('geo-select', require('RELATIVE_PATH_TO/vendor/igaster/laravel_cities/src/public/geo-select.vue'));`
+
+Alternative you may publish the component with
+
+`php artisan vendor:publish --provider="Igaster\LaravelCities\GeoServiceProvider"` and edit it.
+
+### Compile compoment
+
+`npm run dev`
+
+### Use in blade files
+
+Example:
+```html
+<form action="post-url" method="POST">
+	<geo-select></geo-select>
+	<input type="submit">
+</form>
+```
+
+The following inputs will be submited:
+
+- geo-id
+- geo-name
+- geo-long
+- geo-lat
+- geo-country
+- geo-country-code
