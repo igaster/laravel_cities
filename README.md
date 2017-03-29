@@ -150,7 +150,7 @@ For example if you insert them in your `routes\api.php` (recomended) then the fo
 |-----------------------------------|-----------------------------------------------------------|----------------|
 |api/geo/search/{name}/{parent-id?} | Search items containing 'name', (and belong to parent-id) | Collection     |
 |api/geo/item/{id}                  | Get item by id                                            | Geo            |
-|api/geo/items/{ids}                | Get items by ids (comma seperated list)                   | Collection     |
+|api/geo/items/{ids}                | Get multiple items by ids (comma seperated list)          | Collection     |
 |api/geo/children/{id}              | Get children of item                                      | Collection     |
 |api/geo/parent/{id}                | Get parent of item                                        | Geo            |
 |api/geo/country/{code}             | get country by two-letter code                            | Geo            |
@@ -186,15 +186,13 @@ In your main vue-app.js file add the component declaration:
 
 Alternative you may publish the component with
 
-`php artisan vendor:publish --provider="Igaster\LaravelCities\GeoServiceProvider"` and edit it.
+`artisan vendor:publish --provider="Igaster\LaravelCities\GeoServiceProvider"`
 
-now your component's path should be registered as
-
-`Vue.component('geo-select', require('RELATIVE_PATH_TO/resources/LaravelCities/geo-select.vue'));`
+Component will be exported at `/resources/LaravelCities/geo-select.vue` so that you can make modifications...
 
 ### Compile compoment
 
-`npm run dev`
+`npm run dev` (or `npm run production`)
 
 ### Use in blade files
 
@@ -202,6 +200,7 @@ Example:
 ```html
 <form action="post-url" method="POST">
 	<geo-select></geo-select>
+	<!-- Add more form fields here... -->
 	<input type="submit">
 </form>
 ```
@@ -214,3 +213,13 @@ The following inputs will be submited:
 - geo-lat
 - geo-country
 - geo-country-code
+
+### Full syntax:
+
+```html
+<geo-select
+	prefix = "geo"                 		<!-- prefix fields that will be submited --> 
+	api-root-url = "\api"          		<!-- Root url for API -->
+	:countries = "[390903,3175395]"		<!-- Optional: Limit to specific countries (defined by ids) -->
+></geo-select>
+```

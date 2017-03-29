@@ -12,7 +12,11 @@ Creates the following inputs that will be submited:
 Example Usage
 
 	<form action="/submit/url" method="POST">
-		<geo-select></geo-select>
+		<geo-select
+			prefix = "my-prefix"
+			api-root-url = "\xxx\yyy"
+			:countries = "[390903,3175395]"
+		></geo-select>
 		<input type="submit">
 	</form>
 
@@ -21,12 +25,12 @@ Example Usage
     <div>
 
 		<div v-if="finished" class='geo-breadcrumb'>
-    		<input type="hidden" name="geo-id" :value="location().id">
-    		<input type="hidden" name="geo-name" :value="location().name">
-    		<input type="hidden" name="geo-long" :value="location().long">
-    		<input type="hidden" name="geo-lat" :value="location().lat">
-    		<input type="hidden" name="geo-country" :value="country().name">
-    		<input type="hidden" name="geo-country-code" :value="location().country">
+    		<input type="hidden" :name="prefix+'-id'" :value="location().id">
+    		<input type="hidden" :name="prefix+'-name'" :value="location().name">
+    		<input type="hidden" :name="prefix+'-long'" :value="location().long">
+    		<input type="hidden" :name="prefix+'-lat'" :value="location().lat">
+    		<input type="hidden" :name="prefix+'-country'" :value="country().name">
+    		<input type="hidden" :name="prefix+'-country-code'" :value="location().country">
 			<div class="form-group">
 				<label>Your Location:</label><br>
 				<span class="geo-breadcrumb-item" v-for="item in path">{{item.name}}</span>				
@@ -59,6 +63,18 @@ Example Usage
 
 <script>
     export default {
+    	props: {
+
+			apiRootUrl: {
+				default: '/api',
+			},
+			prefix: {
+				default: 'geo',
+			},
+			countries: {
+				default: null,
+			}
+    	},
         data(){
             return {
             	count: 0,
@@ -100,10 +116,15 @@ Example Usage
 			getChildrenOf: function(id, index){
 				this.loadingIndex = index;
 
-				if(id==null)
-					var url = '/api/geo/countries'
+				var url = this.apiRootUrl;
+				if(id==null){
+					if(this.countries==null)
+						url+='/geo/countries'
+					else
+						url+='/geo/items/'+this.countries;
+				}
 				else
-					var url = '/api/geo/children/'+id;
+					url+='/geo/children/'+id;
 
 				axios.get(url, {
 				}).then(response => {
