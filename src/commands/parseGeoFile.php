@@ -138,7 +138,7 @@ class parseGeoFile extends Command
 
         // Store Tree in DB
         $this->info("Writing to DB</info>");
-        $stmt = $this->pdo->prepare("INSERT INTO geo (`id`, `parent_id`, `left`, `right`, `depth`, `name`, `alternames`, `country`, `level`, `population`, `lat`, `long`) VALUES (:id, :parent_id, :left, :right, :depth, :geoid, :name, :alternames, :country, :level, :population, :lat, :long)");
+        $stmt = $this->pdo->prepare("INSERT INTO geo (`id`, `parent_id`, `left`, `right`, `depth`, `name`, `alternames`, `country`, `level`, `population`, `lat`, `long`) VALUES (:id, :parent_id, :left, :right, :depth, :name, :alternames, :country, :level, :population, :lat, :long)");
 
 
         $count = 0;
