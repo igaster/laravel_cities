@@ -143,7 +143,7 @@ class parseGeoFile extends Command
 
         $count = 0;
         $totalCount = count($this->geoItems->items);
-        $progressBar = new \Symfony\Component\Console\Helper\ProgressBar($this->output, $totalCount);
+        $progressBar = new \Symfony\Component\Console\Helper\ProgressBar($this->output, 100);
         foreach ($this->geoItems->items as $item) {
             if ( $stmt->execute([
                 ':id'           => $item->getId(),
