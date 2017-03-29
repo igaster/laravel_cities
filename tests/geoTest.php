@@ -205,4 +205,22 @@ class geoTest extends abstractTest
  			10 => "Dimos Zakynthos",
 		],$result);
 	}
+
+
+	//-- Test: getByIds()
+	public function testGetByIds(){
+		$result = Geo::getByIds([6252001,390903,3175395]); // US,GR,IT
+
+		$this->assertInstanceOf(\Illuminate\Support\Collection::class, $result);
+			
+		$result= $result->map(function($item){
+			return $item->name;
+		})->toArray();
+
+		$this->assertEquals([
+			0 => 'Hellenic Republic',
+			1 => 'Repubblica Italiana',
+			2 => 'United States',
+		],$result);
+	}	
 }

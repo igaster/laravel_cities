@@ -62,6 +62,19 @@ class apiTest extends abstractTest
 		$this->assertEquals('Nomos Kerkyras', $result->name);
 	}
 
+
+	public function testItems(){
+		$result = $this->api("/geo/items/390903,3175395");
+
+		$result = array_map(function($item){
+			return $item->name;
+		}, $result);
+
+		$this->assertContains('Hellenic Republic', $result);
+		$this->assertContains('Repubblica Italiana', $result);
+	}
+
+
 	public function testCountries(){
 		$result = $this->api("/geo/countries");
 		$result = array_map(function($item){

@@ -62,12 +62,12 @@ You can use `Igaster\LaravelCities\Geo` Model to access the database. List of av
 $geo->name;       // name of geographical point in plain ascii
 $geo->alternames; // Array of alternate names (Stored as Json)
 $geo->country;    // 2-letter country code (ISO-3166)
-$geo->population; // ...
+$geo->id;         // Original id from geonames.org database (geonameid)
+$geo->population; // Population (Where provided)
 $geo->lat;        // latitude in decimal degrees (wgs84)
 $geo->long;       // longitude in decimal degrees (wgs84)
-$geo->geoid;      // Original id from geonames.org database (geonameid)
 $geo->level;      // Administrator level code (feature code)
-// id, parent_id, left, right, depth: Used to build hierarcy tree
+// parent_id, left, right, depth: Used to build hierarcy tree
 ```
 
 Visit http://www.geonames.org > Info, for a more detailed description.
@@ -81,8 +81,9 @@ use Igaster\LaravelCities\Geo;
 Geo::getCountries();                // Get a Collection of all countries
 Geo::getCountry('US');				// Get item by Country code
 Geo::findName('Nomos Kerkyras');	// Find item by (ascii) name
-Geo::searchNames('york');		// Search item by all alternative names. Case insensitive 
+Geo::searchNames('york');			// Search item by all alternative names. Case insensitive 
 Geo::searchNames('vegas', Geo::getCountry('US'));	// ... and belongs to an item
+Geo::getByIds([390903,3175395]); 	// Get a Collection of items by Ids
 ```
 
 ## Traverse tree
@@ -149,6 +150,7 @@ For example if you insert them in your `routes\api.php` (recomended) then the fo
 |-----------------------------------|-----------------------------------------------------------|----------------|
 |api/geo/search/{name}/{parent-id?} | Search items containing 'name', (and belong to parent-id) | Collection     |
 |api/geo/item/{id}                  | Get item by id                                            | Geo            |
+|api/geo/items/{ids}                | Get items by ids (comma seperated list)                   | Collection     |
 |api/geo/children/{id}              | Get children of item                                      | Collection     |
 |api/geo/parent/{id}                | Get parent of item                                        | Geo            |
 |api/geo/country/{code}             | get country by two-letter code                            | Geo            |

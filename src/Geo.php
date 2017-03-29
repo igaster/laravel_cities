@@ -75,9 +75,9 @@ class Geo extends Eloquent {
     //  Mutators
     // ----------------------------------------------
 
-    public function setXxxAttribute($value){
-        $this->attributes['xxx'] = $value;     
-    }
+    // public function setXxxAttribute($value){
+    //     $this->attributes['xxx'] = $value;     
+    // }
 
     // ----------------------------------------------
     //  Relations
@@ -87,6 +87,32 @@ class Geo extends Eloquent {
     // ----------------------------------------------
     //  Methods
     // ----------------------------------------------
+
+    // search in `name` and `alternames` / return collection
+    public static function searchNames($name, Geo $parent =null){
+        $query = self::search($name)->orderBy('name', 'ASC');
+
+        if ($parent){
+            $query->areDescentants($parent);
+        }
+
+        return $query->get();
+    }
+
+    // get all Countries
+    public static function getCountries(){
+        return self::level(Geo::LEVEL_COUNTRY)->orderBy('name')->get();
+    }
+
+    // get Country by country Code (eg US,GR)
+    public static function getCountry($countryCode){
+        return self::level(Geo::LEVEL_COUNTRY)->country($countryCode)->first();
+    }
+
+    // get multiple item by Ids
+    public static function getByIds(array $Ids = []){
+        return self::whereIn('id',$Ids)->orderBy('name')->get();
+    }
 
     // is imediate Child of $item ?
     public function isChildOf(Geo $item){
@@ -113,30 +139,6 @@ class Geo extends Eloquent {
         return self::where('name',$name)->first();
     }
 
-    // search in `name` and `alternames` / return collection
-    public static function searchNames($name, Geo $parent =null){
-        $query = self::search($name)->orderBy('name', 'ASC');
-
-        if ($parent){
-            $query->areDescentants($parent);
-        }
-
-        return $query->get();
-
-        // $sql = "SELECT * 
-        //     FROM geo 
-        //     WHERE (name LIKE :name1
-        //         OR JSON_SEARCH(alternames, 'all', :name2) IS NOT NULL) "
-        //     .($parent ? "AND `left` > {$parent->left} AND `right` < {$parent->right} " : "")
-        //     ."ORDER BY name ASC";
-        // $sth = \DB::connection()->getPdo()->prepare($sql);
-        // $sth->bindValue(':name1', "%{$name}%");
-        // $sth->bindValue(':name2', "%{$name}%");
-        // $sth->execute();
-        // $data = $sth->fetchAll(\PDO::FETCH_OBJ);
-        // return self::hydrate($data);
-    }
-
     // get all imediate Children (Collection)
     public function getChildren(){
         return self::descendants()->where('depth', $this->depth+1)->orderBy('name')->get();
@@ -157,16 +159,6 @@ class Geo extends Eloquent {
         return self::descendants()->orderBy('level')->orderBy('name')->get();
     }
 
-    // get all Countries
-    public static function getCountries(){
-        return self::level(Geo::LEVEL_COUNTRY)->orderBy('name')->get();
-    }
-
-    // get Country by country Code (eg US,GR)
-    public static function getCountry($countryCode){
-        return self::level(Geo::LEVEL_COUNTRY)->country($countryCode)->first();
-    }
-
     // ----------------------------------------------
     //  Routes
     // ----------------------------------------------
@@ -175,6 +167,7 @@ class Geo extends Eloquent {
         Route::group(['prefix' => 'geo'], function(){
             Route::get('search/{name}/{parent_id?}',    '\Igaster\LaravelCities\GeoController@search');
             Route::get('item/{id}',         '\Igaster\LaravelCities\GeoController@item');
+            Route::get('items/{ids}',       '\Igaster\LaravelCities\GeoController@items');
             Route::get('children/{id}',     '\Igaster\LaravelCities\GeoController@children');
             Route::get('parent/{id}',       '\Igaster\LaravelCities\GeoController@parent');
             Route::get('country/{code}',    '\Igaster\LaravelCities\GeoController@country');

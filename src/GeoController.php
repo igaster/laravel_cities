@@ -6,6 +6,11 @@ class GeoController extends \Illuminate\Routing\Controller {
 		return \Response::json(Geo::find($id));
 	}
 
+	public function items($ids){
+		$ids=explode(',', $ids);
+		return \Response::json(Geo::getByIds($ids));
+	}
+
 	public function children($id){
 		return Geo::find($id)->getChildren();
 	}
