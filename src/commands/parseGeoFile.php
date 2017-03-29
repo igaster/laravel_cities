@@ -161,7 +161,8 @@ class parseGeoFile extends Command
             ]) === false){
                 throw new Exception("Error in SQL : '$sql'\n".PDO::errorInfo(), 1);
             }
-            $progressBar->setProgress($count++);
+            $progress = $count++/$totalCount*100;
+            $progressBar->setProgress($progress);
         }
         $progressBar->finish();
 
