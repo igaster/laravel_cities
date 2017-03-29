@@ -1,6 +1,6 @@
 {
     "name": "igaster/laravel_cities",
-	"description": "Description",
+	"description": "Find any country/city. Deploy geonames.org database localy. Find lang/lat etc. Optimized DB tree structure",
     "keywords": ["laravel-5.x", "geonames.org"],
     "license": "MIT",
     "homepage": "https://github.com/igaster/laravel_cities.git",
