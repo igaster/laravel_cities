@@ -141,6 +141,7 @@ class parseGeoFile extends Command
         $stmt = $this->pdo->prepare("INSERT INTO geo (`id`, `parent_id`, `left`, `right`, `depth`, `name`, `alternames`, `country`, `level`, `population`, `lat`, `long`) VALUES (:id, :parent_id, :left, :right, :depth, :name, :alternames, :country, :level, :population, :lat, :long)");
 
 
+        $count = 0;
         $totalCount = count($this->geoItems->items);
         $progressBar = new \Symfony\Component\Console\Helper\ProgressBar($this->output, $totalCount);
         foreach ($this->geoItems->items as $item) {
@@ -160,7 +161,7 @@ class parseGeoFile extends Command
             ]) === false){
                 throw new Exception("Error in SQL : '$sql'\n".PDO::errorInfo(), 1);
             }
-            $progressBar->setProgress($totalCount);
+            $progressBar->setProgress($count++);
         }
         $progressBar->finish();
 

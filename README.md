@@ -23,7 +23,7 @@ What you dont get:
 [Tip] Download on your remote server with:
 
 ```
-cd resources
+cd storage
 wget http://download.geonames.org/export/dump/allCountries.zip && unzip allCountries.zip && rm allCountries.zip
 wget http://download.geonames.org/export/dump/hierarchy.zip && unzip hierarchy.zip && rm hierarchy.zip
 ```
