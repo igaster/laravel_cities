@@ -158,17 +158,29 @@ The response is always a JSON representation of either a Geo class or a Collecti
 
 # Vue Component
 
-A vue.js component is shipped with this package that plugs into the provided API and provides an interactive way to pick a location through a series of steps. Assuming that you are using Webpack to compile your assets, and you have included `vue-app.js`:
+A [Vue component](https://github.com/igaster/laravel_cities/blob/master/vue/geo-slect.vue) is shipped with this package that plugs into the provided API and provides an interactive way to pick a location through a series of steps. Sorry, no live demo yet, just some screenshots:
+
+![Select Location](/docs/1.jpg?raw=true)
+![Finished Selection](/docs/2.jpg?raw=true)
+![Form Submited](/docs/3.jpg?raw=true)
+
+### Usage Guide
+
+Assuming that you are using Webpack to compile your assets, and you have included `vue-app.js`:
 
 ### Add in your application
 
 In your main vue-app.js file add the component declaration:
 
-`Vue.component('geo-select', require('RELATIVE_PATH_TO/vendor/igaster/laravel_cities/src/public/geo-select.vue'));`
+`Vue.component('geo-select', require('RELATIVE_PATH_TO/vendor/igaster/laravel_cities/src/vue/geo-select.vue'));`
 
 Alternative you may publish the component with
 
 `php artisan vendor:publish --provider="Igaster\LaravelCities\GeoServiceProvider"` and edit it.
+
+now your component's path should be registered as
+
+`Vue.component('geo-select', require('RELATIVE_PATH_TO/resources/LaravelCities/geo-select.vue'));`
 
 ### Compile compoment
 
