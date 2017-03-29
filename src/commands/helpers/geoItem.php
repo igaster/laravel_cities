@@ -3,9 +3,7 @@
 class geoItem {
 
 	public $data;
-	public $id;
 
-	public $parent = null;
 	public $parentId = null;
 	public $childrenGeoId = [];
 	public $depth = 0;
@@ -31,9 +29,7 @@ class geoItem {
 
 	public function setParent($geoId){
 		if( $parent = $this->geoItems->findGeoId($geoId)){
-			$this->parent = $geoId;
-			$this->parentId = $parent->id;
-			
+			$this->parentId = $geoId;
 		}
 	}
 

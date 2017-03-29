@@ -2,15 +2,8 @@
 
 class geoCollection {
 	public $items = [];
-	public $count = 0;
-
-	public function __construct($startId = 0){
-		$this->count = $startId;
-	}
 
 	public function add($item){
-		$this->count++;
-		$item->id = $this->count;
 		$this->items[$item->getId()] = $item;
 	}
 
@@ -20,7 +13,7 @@ class geoCollection {
 
 	public function findId($id){
 		foreach ($this->items as $item) {
-			if($item->id == $id)
+			if($item->getId() == $id)
 				return $item;
 		}
 		return false;

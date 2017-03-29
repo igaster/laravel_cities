@@ -18,11 +18,7 @@ class parseGeoFile extends Command
         if (!\Schema::hasTable('geo'))
             return;
 
-        $sql = 'SELECT MAX(id) as maxID FROM geo';
-        $result = $this->sql($sql);
-        $maxId = isset($result['maxID']) ?  $result['maxID'] : 0;
-
-        $this->geoItems = new geoCollection($maxId);
+        $this->geoItems = new geoCollection();
     }
 
     public function sql($sql){
@@ -53,14 +49,10 @@ class parseGeoFile extends Command
     public function handle() {
         $start = microtime(true);
 
-        // $fileName = __DIR__.'/../..';
-        // $fileName .= $this->argument('country') ? '/data/'.$this->argument('country').'.txt' : '/data/allCountries.txt';
-        // $fileName = realpath($fileName);
-        
         $fileName = $this->argument('country') ? storage_path(strtoupper($this->argument('country')).'.txt') : storage_path('allCountries.txt');
         $append =  $this->option('append');
 
-        // Read Raw filw
+        // Read Raw file
         $this->info("Reading File '$fileName'");
         $filesize = filesize($fileName);
         $handle = fopen($fileName, 'r');
@@ -77,8 +69,6 @@ class parseGeoFile extends Command
             // Check for errors
             if(count($line)!== 19) dd($line[0],$line[2]);
 
-            // if($line[0] == 69543) dd($line);
-        
             switch ($line[7]) {
                 case 'PCLI':    // Country
                 case 'PPLC':    // Capital
@@ -148,7 +138,7 @@ class parseGeoFile extends Command
 
         // Store Tree in DB
         $this->info("Writing to DB</info>");
-        $stmt = $this->pdo->prepare("INSERT INTO geo (`id`, `parent_id`, `left`, `right`, `depth`, `geoid`, `name`, `alternames`, `country`, `level`, `population`, `lat`, `long`) VALUES (:id, :parent_id, :left, :right, :depth, :geoid, :name, :alternames, :country, :level, :population, :lat, :long)");
+        $stmt = $this->pdo->prepare("INSERT INTO geo (`id`, `parent_id`, `left`, `right`, `depth`, `name`, `alternames`, `country`, `level`, `population`, `lat`, `long`) VALUES (:id, :parent_id, :left, :right, :depth, :geoid, :name, :alternames, :country, :level, :population, :lat, :long)");
 
 
         $count = 0;
@@ -156,12 +146,11 @@ class parseGeoFile extends Command
         $progressBar = new \Symfony\Component\Console\Helper\ProgressBar($this->output, 100);
         foreach ($this->geoItems->items as $item) {
             if ( $stmt->execute([
-                ':id'           => $item->id,
+                ':id'           => $item->getId(),
                 ':parent_id'    => $item->parentId,
                 ':left'         => $item->left,
                 ':right'        => $item->right,
                 ':depth'        => $item->depth,
-                ':geoid'        => $item->data[0],
                 ':name'         => substr($item->data[2],0,40),
                 ':alternames'   => $item->data[3],
                 ':country'      => $item->data[8],
