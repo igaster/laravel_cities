@@ -220,6 +220,7 @@ The following inputs will be submited:
 <geo-select
 	prefix = "geo"                 		<!-- prefix fields that will be submited --> 
 	api-root-url = "\api"          		<!-- Root url for API -->
-	:countries = "[390903,3175395]"		<!-- Optional: Limit to specific countries (defined by ids) -->
+	:countries = "[390903,3175395]"		<!-- Limit to specific countries (defined by ids) -->
+	:enable-breadcrumb = "true"			<!-- Enable/Disable Breadcrumb -->
 ></geo-select>
 ```

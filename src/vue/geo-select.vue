@@ -15,34 +15,40 @@ Example Usage
 		<geo-select
 			prefix = "my-prefix"
 			api-root-url = "\xxx\yyy"
+			:enable-breadcrumb = "true"
 			:countries = "[390903,3175395]"
 		></geo-select>
 		<input type="submit">
 	</form>
 
 -->
+
 <template>
     <div>
 
-		<div v-if="finished" class='geo-breadcrumb'>
+		<div v-if="location() !== null">
     		<input type="hidden" :name="prefix+'-id'" :value="location().id">
     		<input type="hidden" :name="prefix+'-name'" :value="location().name">
     		<input type="hidden" :name="prefix+'-long'" :value="location().long">
     		<input type="hidden" :name="prefix+'-lat'" :value="location().lat">
     		<input type="hidden" :name="prefix+'-country'" :value="country().name">
     		<input type="hidden" :name="prefix+'-country-code'" :value="location().country">
+		</div>
+
+		<div v-show="breadCrumb" class='geo-breadcrumb'>
 			<div class="form-group">
 				<label>Your Location:</label><br>
 				<span class="geo-breadcrumb-item" v-for="item in path">{{item.name}}</span>				
-				<a class="btn btn-xs btn-default pull-right" href="#" @click="finished = false">Change Location...</a>
+				<a class="btn btn-xs btn-default pull-right" href="#" @click="breadCrumb = false">Change Location...</a>
+				<div class="clearfix"></div>
 			</div>
 		</div>
 
-		<div v-show="!finished">
+		<div v-show="!breadCrumb">
 			<div class="form-group">
 				<label>Select your Location: </label>
 				<p v-if="loadingIndex == 0"><i class="fa fa-cog fa-spin"></i> Loading Countries...</p>
-				<select v-else class="form-control select2" v-model="values[0]" @change="itemSelected(0)">
+				<select v-else class="form-control _select2" v-model="values[0]" @change="itemSelected(0)">
 				  <option v-for="item in items[0]" :value="item.id">{{item.name}}</option>
 				</select>
 			</div>    
@@ -53,7 +59,10 @@ Example Usage
 					<select v-if="hasItems(i)" class="form-control _select2" v-model="values[i]"  @change="itemSelected(i)">
 					  <option v-for="item in items[i]" :value="item.id">{{item.name}}</option>
 					</select>
-					<a v-else class="btn btn-xs btn-default pull-right" href="#" @click="finished = true">Confirm Location</a>
+					<div v-if="!hasItems(i) && enableBreadcrumb">
+						<a class="btn btn-xs btn-default pull-right" href="#" @click="breadCrumb = true">Confirm Location</a>
+						<div class="clearfix"></div>
+					</div>
 				</div>
 			</div> 
 		</div>
@@ -73,6 +82,9 @@ Example Usage
 			},
 			countries: {
 				default: null,
+			},
+			enableBreadcrumb: {
+				default: true,
 			}
     	},
         data(){
@@ -82,7 +94,7 @@ Example Usage
                 values: [],
                 path: [],
                 loadingIndex: null,
-                finished: false,
+                breadCrumb: false,
             };
         },
 		created: function () {
@@ -108,6 +120,9 @@ Example Usage
 				return (this.items[index] instanceof Array) && (this.items[index].length > 0);
 			},
 			location(){
+				if (this.path.length==0)
+					return null;
+
 				return this.path[this.path.length-1];
 			},
 			country(){
@@ -129,9 +144,13 @@ Example Usage
 				axios.get(url, {
 				}).then(response => {
 					this.items[index] = response.data;
-					this.finished = !this.hasItems(index);
+					this.breadCrumb = this.enableBreadcrumb && !this.hasItems(index);
 					this.loadingIndex = null;
 					this.$forceUpdate();
+					if(this.items[index].length==1){
+						this.values[index] = this.items[index][0].id;
+						this.itemSelected(index);
+					}
 				})
 				.catch(error => {
 					alert('Error');
