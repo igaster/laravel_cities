@@ -134,7 +134,7 @@ Example Usage
 				var url = this.apiRootUrl;
 				if(id==null){
 					if(this.countries==null)
-						url+='/geo/countries'
+						url+='/geo/countries?fields=id,name'
 					else
 						url+='/geo/items/'+this.countries;
 				}
