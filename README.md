@@ -158,6 +158,14 @@ For example if you insert them in your `routes\api.php` (recomended) then the fo
 
 The response is always a JSON representation of either a Geo class or a Collection.
 
+To reduce bandwith, all Geo model attributes will be returned except from `alternames`, `left`, `right` and `depth`. You can change this behavior by passing an optional parameter on any request:
+
+| URL Params (aplly to all routes)  | Description                             | Example                         |
+|-----------------------------------|-----------------------------------------|---------------------------------|
+|fields=field1,field2               | Returns only the specified attributes   | api/geo/countries?fields=id,name|
+|fields=all                         | Returns all attributes                  | api/geo/countries?fields=all    |
+
+
 # Vue Component
 
 A [Vue component](https://github.com/igaster/laravel_cities/blob/master/vue/geo-slect.vue) is shipped with this package that plugs into the provided API and provides an interactive way to pick a location through a series of steps. Sorry, no live demo yet, just some screenshots:

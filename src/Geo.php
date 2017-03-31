@@ -15,9 +15,18 @@ class Geo extends Eloquent {
     const LEVEL_3 = 'ADM3';
 
 
-    protected   $casts = [
+    protected $casts = [
         'alternames' => 'array',
     ];
+
+    // Hide From JSON
+    protected $hidden = [
+        'alternames',
+        'left',
+        'right',
+        'depth',
+    ];
+
 
     // ----------------------------------------------
     //  Scopes
@@ -69,6 +78,10 @@ class Geo extends Eloquent {
             $query->where('left', '>', $parent->left)
                 ->where('right', '<', $parent->right);
         });
+    }
+
+    public function scopeTest($query){
+        return $query;
     }
 
     // ----------------------------------------------
@@ -155,8 +168,33 @@ class Geo extends Eloquent {
     }
 
     // get all Descendants (Collection) Alphabetical
-   public function getDescendants(){
+    public function getDescendants(){
         return self::descendants()->orderBy('level')->orderBy('name')->get();
+    }
+
+
+
+    // Return only $fields as Json. null = Show all 
+    public function fliterFields($fields = null){
+
+        if (is_string($fields)){ // Comma Seperated List (eg Url Param)
+            $fields = explode(',', $fields);
+        }
+
+        if(empty($fields)){
+            $this->hidden = [];
+        } else {
+            $this->hidden = ['id','parent_id','left','right','depth','name','alternames','country','level','population','lat','long'];
+            foreach ($fields as $field) {
+                $index = array_search($field, $this->hidden);
+                if($index !== false){
+                    unset($this->hidden[$index]);
+                }
+            };
+            $this->hidden = array_values($this->hidden);
+        }
+
+        return $this;
     }
 
     // ----------------------------------------------

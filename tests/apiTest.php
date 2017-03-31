@@ -58,10 +58,9 @@ class apiTest extends abstractTest
 
 	public function testItem(){
 		$geo = Geo::findName('Nomos Kerkyras');
-		$result = $this->api("/geo/item/{$geo->id}");
+		$result = $this->api("/geo/item/{$geo->id}?fields=all");
 		$this->assertEquals('Nomos Kerkyras', $result->name);
 	}
-
 
 	public function testItems(){
 		$result = $this->api("/geo/items/390903,3175395");
@@ -108,5 +107,39 @@ class apiTest extends abstractTest
 
 		$this->assertContains('Dimos Corfu', $result);
 	}
+
+	public function testFieldsParam(){
+		$geo = Geo::findName('Nomos Kerkyras');
+
+		$result = $this->api("/geo/item/{$geo->id}?fields=name,id");
+		$this->assertObjectHasAttribute('name',$result);
+		$this->assertObjectHasAttribute('id',$result);
+		$this->assertObjectNotHasAttribute('lat',$result);
+
+		$result = $this->api("/geo/item/{$geo->id}?fields= NaMe ,  id ");
+		$this->assertObjectHasAttribute('name',$result);
+		$this->assertObjectHasAttribute('id',$result);
+		$this->assertObjectNotHasAttribute('lat',$result);
+
+
+		$result = $this->api("/geo/item/{$geo->id}");
+		$this->assertObjectHasAttribute('name',$result);
+		$this->assertObjectHasAttribute('id',$result);
+		$this->assertObjectHasAttribute('lat',$result);
+		$this->assertObjectNotHasAttribute('left',$result);
+
+		$result = $this->api("/geo/item/{$geo->id}?fields=all");
+		$this->assertObjectHasAttribute('name',$result);
+		$this->assertObjectHasAttribute('id',$result);
+		$this->assertObjectHasAttribute('lat',$result);
+		$this->assertObjectHasAttribute('left',$result);
+	}
+
+	public function testFieldsCollection(){
+		$result = $this->api("/geo/countries?fields=name");
+		$this->assertObjectHasAttribute('name',$result[0]);
+		$this->assertObjectNotHasAttribute('lat',$result[0]);
+	}
+
 
 }

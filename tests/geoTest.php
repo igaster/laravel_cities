@@ -223,4 +223,59 @@ class geoTest extends abstractTest
 			2 => 'United States',
 		],$result);
 	}	
+
+	//-- Test: setJsonFields()
+
+	protected function assertArrayHasKeysOnly($keys = [], $array = []){
+		foreach ($keys as $key) {
+			$this->assertArrayHasKey($key, $array);
+		}
+
+		$this->assertEquals(count($keys), count($array));
+	}
+
+	public function testSetJsonFields(){
+		$result = Geo::findName('Ionian Islands')->toArray();
+		$this->assertArrayHasKeysOnly([
+			'id',
+			'parent_id',
+			// 'left',
+			// 'right',
+			// 'depth',
+			'name',
+			// 'alternames',
+			'country',
+			'level',
+			'population',
+			'lat',
+			'long'
+		], $result);
+
+		$result = Geo::findName('Ionian Islands')->fliterFields(['name','country'])->toArray();
+		$this->assertArrayHasKeysOnly([
+			'name',
+			'country',
+		], $result);
+
+		$result = Geo::findName('Ionian Islands')->fliterFields()->toArray();
+		$this->assertArrayHasKeysOnly([
+			'id',
+			'parent_id',
+			'left',
+			'right',
+			'depth',
+			'name',
+			'alternames',
+			'country',
+			'level',
+			'population',
+			'lat',
+			'long'
+		], $result);
+
+
+	}	
+
+
+
 }
