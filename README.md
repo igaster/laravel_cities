@@ -88,10 +88,10 @@ Geo::getByIds([390903,3175395]);   // Get a Collection of items by Ids
 
 ## Traverse tree
 ```php
-$children 	= $geo->getChildren();			// Get direct Children of $geo (Collection)
-$parent 	= $geo->getParent();			// Get single Parent of $geo (Geo)
-$ancenstors = $geo->getAncensors();			// Get Ancenstors tree of $geo from top->bottom (Collection)
-$descendants= $geo->getDescendants();		// Get all Descentants of $geo alphabetic (Collection)
+$children 	= $geo->getChildren();    // Get direct Children of $geo (Collection)
+$parent 	= $geo->getParent();      // Get single Parent of $geo (Geo)
+$ancenstors = $geo->getAncensors();   // Get Ancenstors tree of $geo from top->bottom (Collection)
+$descendants= $geo->getDescendants(); // Get all Descentants of $geo alphabetic (Collection)
 ```
 
 
