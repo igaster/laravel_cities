@@ -50,7 +50,7 @@ class seedGeoFile extends Command
         $start = microtime(true);
 
         $fileName = $this->argument('country') ? strtoupper($this->argument('country')).'.txt' : 'geo/allCountries.txt';
-        $fileName = storage_path('geo/{$fileName}.txt');
+        $fileName = storage_path("geo/{$fileName}.txt");
         $append =  $this->option('append');
 
         // Read Raw file
