@@ -49,7 +49,7 @@ class seedGeoFile extends Command
     public function handle() {
         $start = microtime(true);
 
-        $fileName = $this->argument('country') ? strtoupper($this->argument('country')).'.txt' : 'allCountries.txt';
+        $fileName = $this->argument('country') ? strtoupper($this->argument('country')) : 'allCountries';
         $fileName = storage_path("geo/{$fileName}.txt");
         $append =  $this->option('append');
 
