@@ -58,7 +58,7 @@ class seedJsonFile extends Command
         $this->info(" Finished Processing $count items");
 
         $this->info("Rebuilding Tree in DB");
-        Geo::rebuildTree(this->output);
+        Geo::rebuildTree($this->output);
 
         $time_elapsed_secs = microtime(true) - $start;
         $this->info("Timing: $time_elapsed_secs sec</info>");
