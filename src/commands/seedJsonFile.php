@@ -24,7 +24,8 @@ class seedJsonFile extends Command
     public function handle() {
         $start = microtime(true);
 
-        $fileName = storage_path($this->argument('file').'.json');
+        $fileName = $this->argument('file');
+        $fileName = storage_path('geo/{$fileName}.json')
         $append =  $this->option('append');
 
         dd($fileName);
