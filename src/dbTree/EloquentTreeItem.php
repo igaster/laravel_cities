@@ -7,7 +7,11 @@ class EloquentTreeItem extends Eloquent {
     // Properties:
     // id, parent_id, depth, left, right
 
+	protected EloquentTreeItem $parent = null;
+
     public static function rebuildTree(){
+    	$items = self::all();
+    	dd($items);
 
     }
 
