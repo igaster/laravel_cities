@@ -29,7 +29,7 @@ class seedGeoFile extends Command
         return $result->fetch();
     }    
 
-    public function buildDbTree($item, $count = 1 , $depth = 0){
+    public function buildDbTree($item, $count = 1, $depth = 0){
         $item->left=$count++;
         $item->depth=$depth;
         foreach ($item->getChildren() as $child) {

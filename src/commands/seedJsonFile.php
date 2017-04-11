@@ -7,7 +7,7 @@ use Igaster\LaravelCities\Geo;
 
 class seedJsonFile extends Command
 {
-    protected $signature = 'geo:json {file} {--append}';
+    protected $signature = 'geo:json {file?} {--append}';
     protected $description = 'Load a json file.';
 
     private $pdo;
@@ -25,6 +25,18 @@ class seedJsonFile extends Command
         $start = microtime(true);
 
         $fileName = $this->argument('file');
+
+        if(empty($filename)){
+            $this->info("Available json files:");
+            $this->info("---------------------");
+            $files = array_diff(scandir(storage_path("geo"), ['.','..']);
+            foreach ($files as $file)
+                $this->comment(' '.substr($file, 0, strpos($file, '.json')));
+
+            $this->info("---------------------");
+            $filename   = $this->ask('Choose File to restore:');
+        }
+
         $fileName = storage_path("geo/{$fileName}.json");
         $append =  $this->option('append');
 
@@ -44,6 +56,10 @@ class seedJsonFile extends Command
         }
         $progressBar->finish();
         $this->info(" Finished Processing $count items");
+
+        $this->info("Rebuilding Tree in DB");
+        Geo::rebuildTree(this->output);
+
         $time_elapsed_secs = microtime(true) - $start;
         $this->info("Timing: $time_elapsed_secs sec</info>");
     }

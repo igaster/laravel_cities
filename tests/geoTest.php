@@ -272,10 +272,11 @@ class geoTest extends abstractTest
 			'lat',
 			'long'
 		], $result);
+	}
 
-
-	}	
-
-
+	// public function testRebuildTree(){
+	// 	Geo::rebuildTree(true);
+	// 	$this->assertTrue(true);
+	// }
 
 }
