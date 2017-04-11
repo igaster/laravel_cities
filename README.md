@@ -17,13 +17,14 @@ What you dont get:
 
 # Instructions
 	
+- Create a folder `geo` into app's storage folder ('\storage\geo')
 - Download & unzip "hieararcy.txt" & "allCountries.txt" from geonames.org (http://download.geonames.org/export/dump)
-- Save to your app's storage folder ('\storage')
 
-[Tip] Download on your remote server with:
+[Tip] Quick script to download on your remote server with:
 
 ```
-cd storage
+mkdir storage\geo
+cd storage\geo
 wget http://download.geonames.org/export/dump/allCountries.zip && unzip allCountries.zip && rm allCountries.zip
 wget http://download.geonames.org/export/dump/hierarchy.zip && unzip hierarchy.zip && rm hierarchy.zip
 ```
