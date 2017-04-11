@@ -55,6 +55,18 @@ Note: If you don't want all the countries, you can download only country specifi
 artisan geo:load US --append
 ```
 
+# Seed with custom data
+
+Create a json file with custom data at `storage\geo` and seed with:
+
+```
+artisan geo:json FILENAME
+```
+
+If an item exists in the DB (based on the 'id' value), then it will be updated else a new entry will be inserted. See the example [allCountries.json](https://github.com/igaster/laravel_cities/data/allCountries.json)
+
+Tip: You can get a json representation from the DB by quering the API (see below)
+
 # Geo Model:
 
 You can use `Igaster\LaravelCities\Geo` Model to access the database. List of available properties:
