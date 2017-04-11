@@ -7,7 +7,7 @@ use Igaster\LaravelCities\Geo;
 
 class seedJsonFile extends Command
 {
-    protected $signature = 'geo:json {file?} {--append}';
+    protected $signature = 'geo:json {file?}';
     protected $description = 'Load a json file.';
 
     private $pdo;
@@ -45,11 +45,6 @@ class seedJsonFile extends Command
         if($data === null){
             $this->error("Error decoding json file. Check for syntax errors.");
             exit();
-        }
-
-        if (!$append){ // Empty Table
-            $this->info("Truncating 'geo' table...");
-            \DB::table('geo')->truncate();
         }
 
         $progressBar = new \Symfony\Component\Console\Helper\ProgressBar($this->output, count($data));
