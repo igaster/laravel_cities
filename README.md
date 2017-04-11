@@ -23,8 +23,8 @@ What you dont get:
 [Tip] Quick script to download on your remote server with:
 
 ```
-mkdir storage\geo
-cd storage\geo
+mkdir storage/geo
+cd storage/geo
 wget http://download.geonames.org/export/dump/allCountries.zip && unzip allCountries.zip && rm allCountries.zip
 wget http://download.geonames.org/export/dump/hierarchy.zip && unzip hierarchy.zip && rm hierarchy.zip
 ```
