@@ -50,15 +50,19 @@ class seedJsonFile extends Command
         $count = 0;
         $rebuildTree = false;
         foreach ($data as $item) {
-            if (isset($item['id'])){
-                // $geo = Geo::updateOrCreate(['id' => $item['id']],$item);
-                $geo = Geo::find($item['id']);
-                if(!$geo){
-                    Geo::create($item);
-                    $rebuildTree = true;
-                } else {
-                    $geo->update($item);                    
-                }
+            if ( isset($item['id']) && ($geo = Geo::find($item['id'])) )
+                $geo->update($item);
+            else {
+                $item = array_merge([
+                    'alternames' => [],
+                    'country' => '',
+                    'level' => '',
+                    'population' => 0,
+                    'lat' => 0,
+                    'long' => 0,
+                ], $item);
+                Geo::create($item);
+                $rebuildTree = true;
             }
             $progressBar->setProgress($count++);
         }

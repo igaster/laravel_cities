@@ -15,7 +15,7 @@ class EloquentTreeItem extends Eloquent {
 
 	public static function print($msg, $output){
 		if($output)
-            $output->writeln('<info>'.$msg.'</info>');
+            $output->writeln('<info>- '.$msg.'</info>');
 	}
 
     public static function rebuildTree($output = null){
