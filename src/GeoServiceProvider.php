@@ -34,8 +34,8 @@ class GeoServiceProvider extends ServiceProvider
         // Register Commands
         if ($this->app->runningInConsole()) {
             $this->commands([
-                // \Igaster\LaravelCities\commands\truncTable::class,
-                \Igaster\LaravelCities\commands\parseGeoFile::class,
+                \Igaster\LaravelCities\commands\seedGeoFile::class,
+                \Igaster\LaravelCities\commands\seedJsonFile::class,
             ]);
         }
 
