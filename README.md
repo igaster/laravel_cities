@@ -63,7 +63,7 @@ Create a json file with custom data at `storage\geo` and seed with:
 artisan geo:json FILENAME
 ```
 
-If an item exists in the DB (based on the 'id' value), then it will be updated else a new entry will be inserted. See the example [allCountries.json](https://github.com/igaster/laravel_cities/blob/master/data/countryNames.json) file.
+If an item exists in the DB (based on the 'id' value), then it will be updated else a new entry will be inserted. See the example [allCountries.json](https://github.com/igaster/laravel_cities/blob/master/data/countryNames.json) file which updates the country official names with the most popular simplified version. 
 
 Tip: You can get a json representation from the DB by quering the API (see below)
 
