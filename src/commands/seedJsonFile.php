@@ -29,7 +29,7 @@ class seedJsonFile extends Command
         if(empty($filename)){
             $this->info("Available json files:");
             $this->info("---------------------");
-            $files = array_diff(scandir(storage_path("geo"), ['.','..']);
+            $files = array_diff(scandir(storage_path("geo")), ['.','..']);
             foreach ($files as $file)
                 $this->comment(' '.substr($file, 0, strpos($file, '.json')));
 
