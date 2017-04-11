@@ -14,8 +14,8 @@ class EloquentTreeItem extends Eloquent {
 	protected $children = [];
 
 	public static function print($msg, $output){
-		if($this->output)
-			$this->output->info($msg);
+		if($output)
+			$output->info($msg);
 	}
 
     public static function rebuildTree($output = null){

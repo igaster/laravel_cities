@@ -38,12 +38,18 @@ class seedJsonFile extends Command
         }
 
         $filename = storage_path("geo/{$filename}.json");
+        $this->info("Parsing file: $filename");
         $append =  $this->option('append');
 
         $data = json_decode(file_get_contents($filename), true);
         if($data === null){
             $this->error("Error decoding json file. Check for syntax errors.");
             exit();
+        }
+
+        if (!$append){ // Empty Table
+            $this->info("Truncating 'geo' table...");
+            \DB::table('geo')->truncate();
         }
 
         $progressBar = new \Symfony\Component\Console\Helper\ProgressBar($this->output, count($data));
