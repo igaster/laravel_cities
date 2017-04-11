@@ -48,17 +48,27 @@ class seedJsonFile extends Command
 
         $progressBar = new \Symfony\Component\Console\Helper\ProgressBar($this->output, count($data));
         $count = 0;
+        $rebuildTree = false;
         foreach ($data as $item) {
             if (isset($item['id'])){
-                $geo = Geo::updateOrCreate(['id' => $item['id']],$item);
+                // $geo = Geo::updateOrCreate(['id' => $item['id']],$item);
+                $geo = Geo::find($item['id']);
+                if(!$geo){
+                    Geo::create($item);
+                    $rebuildTree = true;
+                } else {
+                    $geo->update($item);                    
+                }
             }
             $progressBar->setProgress($count++);
         }
         $progressBar->finish();
         $this->info(" Finished Processing $count items");
 
-        $this->info("Rebuilding Tree in DB");
-        Geo::rebuildTree($this->output);
+        if($rebuildTree){
+            $this->info("Rebuilding Tree in DB");
+            Geo::rebuildTree($this->output);
+        }
 
         $time_elapsed_secs = microtime(true) - $start;
         $this->info("Timing: $time_elapsed_secs sec</info>");

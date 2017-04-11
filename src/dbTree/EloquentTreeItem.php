@@ -41,7 +41,7 @@ class EloquentTreeItem extends Eloquent {
     	foreach (self::$items as $item) {
     		if($item->level == GEO::LEVEL_COUNTRY){
     			$count = self::buildTree($item, $count);
-            	$item->printTree();
+            	// $item->printTree();
     		}
     	}
 
