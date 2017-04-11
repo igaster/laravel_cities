@@ -12,21 +12,24 @@ class Geo extends Migration
      * @return void
      */
     public function up() {
-        Schema::create('geo', function (Blueprint $table) {
-            $table->increments('id');
-            $table->integer('parent_id')->nullable();
-            $table->integer('left')->nullable();
-            $table->integer('right')->nullable();
-            $table->integer('depth')->default(0);
-            // $table->integer('geoid');
-            $table->char('name', 60);
-            $table->json('alternames');
-            $table->char('country', 2);
-            $table->char('level', 10);
-            $table->bigInteger('population');
-            $table->decimal('lat',9,6);
-            $table->decimal('long',9,6);
-        });
+        if (!Schema::hasTable('geo')) {
+            Schema::create('geo', function (Blueprint $table) {
+                $table->increments('id');
+                $table->integer('parent_id')->nullable();
+                $table->integer('left')->nullable();
+                $table->integer('right')->nullable();
+                $table->integer('depth')->default(0);
+                // $table->integer('geoid');
+                $table->char('name', 60);
+                $table->json('alternames');
+                $table->char('country', 2);
+                $table->char('level', 10);
+                $table->bigInteger('population');
+                $table->decimal('lat',9,6);
+                $table->decimal('long',9,6);
+            });
+        }
+
     }
 
     /**
