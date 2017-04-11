@@ -2,8 +2,9 @@
 
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Support\Facades\Route;
+use Igaster\LaravelCities\dbTree\EloquentTreeItem;
 
-class Geo extends Eloquent {
+class Geo extends EloquentTreeItem {
 	protected $table = 'geo';
 	protected $guarded = [];
 	public $timestamps = false;
