@@ -1,7 +1,7 @@
 {
     "name": "igaster/laravel_cities",
-	"description": "Find any country/city in the world. Get Long/Lat etc. Deploy geonames.org database localy. Optimized DB tree structure",
-    "keywords": ["laravel-5.x", "geonames.org", "geolocation", "countries", "cities"],
+    "description": "Seed all countries/cities from geonames.org database. Searchable DB tree, ready to use API & a bonus vue.js component!",
+    "keywords": ["laravel", "geonames.org", "geolocation", "countries", "cities"],
     "license": "MIT",
     "homepage": "https://github.com/igaster/laravel_cities.git",
     "authors": [

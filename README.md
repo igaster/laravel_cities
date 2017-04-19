@@ -64,7 +64,7 @@ artisan geo:json
 
 If an item exists in the DB (based on the 'id' value), then it will be updated else a new entry will be inserted. For example the following json file will rename `United States` to `USA` and it will add a child item (set by the parent_id value)
 
-```
+```json
 [
   {
     "id": 6252001,
@@ -258,9 +258,9 @@ The following inputs will be submited:
 
 ```html
 <geo-select
-	prefix = "geo"                 		<!-- prefix fields that will be submited --> 
-	api-root-url = "\api"          		<!-- Root url for API -->
-	:countries = "[390903,3175395]"		<!-- Limit to specific countries (defined by ids) -->
-	:enable-breadcrumb = "true"			<!-- Enable/Disable Breadcrumb -->
+	prefix = "geo"                    <!-- change the  fields name prefix --> 
+	api-root-url = "\api"             <!-- Root url for API -->
+	:countries = "[390903,3175395]"   <!-- Limit to specific countries (defined by ids) -->
+	:enable-breadcrumb = "true"       <!-- Enable/Disable Breadcrumb -->
 ></geo-select>
 ```
