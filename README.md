@@ -17,18 +17,6 @@ What you dont get:
 
 # Instructions
 	
-- Create a folder `geo` into app's storage folder ('\storage\geo')
-- Download & unzip "hieararcy.txt" & "allCountries.txt" from geonames.org (http://download.geonames.org/export/dump)
-
-[Tip] Quick script to download on your remote server with:
-
-```
-mkdir storage/geo
-cd storage/geo
-wget http://download.geonames.org/export/dump/allCountries.zip && unzip allCountries.zip && rm allCountries.zip
-wget http://download.geonames.org/export/dump/hierarchy.zip && unzip hierarchy.zip && rm hierarchy.zip
-```
-
 - Install with copmoser. Run:
 
 `composer require igaster/laravel_cities`
@@ -40,6 +28,17 @@ wget http://download.geonames.org/export/dump/hierarchy.zip && unzip hierarchy.z
     //...
     Igaster\LaravelCities\GeoServiceProvider::class,
 ];
+```
+
+- Create a folder `geo` into app's storage folder ('\storage\geo'). Download & unzip "hieararcy.txt" & "allCountries.txt" from geonames.org (http://download.geonames.org/export/dump)
+
+[Tip] Quick script to download on your remote server with:
+
+```
+mkdir storage/geo
+cd storage/geo
+wget http://download.geonames.org/export/dump/allCountries.zip && unzip allCountries.zip && rm allCountries.zip
+wget http://download.geonames.org/export/dump/hierarchy.zip && unzip hierarchy.zip && rm hierarchy.zip
 ```
 
 - Migrate and Seed. Run:
@@ -57,13 +56,33 @@ artisan geo:load US --append
 
 # Seed with custom data
 
-Create a json file with custom data at `storage\geo` and seed with:
+Create a json file with custom data at `storage\geo` and run the following command to pick a file to seed:
 
 ```
-artisan geo:json FILENAME
+artisan geo:json
 ```
 
-If an item exists in the DB (based on the 'id' value), then it will be updated else a new entry will be inserted. See the example [allCountries.json](https://github.com/igaster/laravel_cities/blob/master/data/countryNames.json) file which updates the country official names with the most popular simplified version. 
+If an item exists in the DB (based on the 'id' value), then it will be updated else a new entry will be inserted. For example the following json file will rename `United States` to `USA` and it will add a child item (set by the parent_id value)
+
+```
+[
+  {
+    "id": 6252001,
+    "name": "USA"
+  },
+  {
+    "name": "USA Child Item",
+    "alternames": ["51st State", "dummy name"],
+    "parent_id": 6252001,
+    "lat": "39.760000",
+    "population": 310232863,
+    "long": "-98.500000"
+  }
+]
+```
+Please note that adding new items to the DB will reindex ALL items to rebuild the tree structure. Please be patient...
+
+An example file is provided: [countryNames.json](https://github.com/igaster/laravel_cities/blob/master/data/countryNames.json) which updates the official  country names with a most popular simplified version.
 
 Tip: You can get a json representation from the DB by quering the API (see below)
 
