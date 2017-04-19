@@ -72,10 +72,10 @@ If an item exists in the DB (based on the 'id' value), then it will be updated e
   },
   {
     "name": "USA Child Item",
-    "alternames": ["51st State", "dummy name"],
     "parent_id": 6252001,
-    "lat": "39.760000",
+    "alternames": ["51st State", "dummy name"],
     "population": 310232863,
+    "lat": "39.760000",
     "long": "-98.500000"
   }
 ]
