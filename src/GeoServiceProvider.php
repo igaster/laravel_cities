@@ -4,12 +4,10 @@ use Illuminate\Support\ServiceProvider;
 
 class GeoServiceProvider extends ServiceProvider
 {
-    public function register() {
+    public function register() {}
 
-    }
-
-    public function boot() {
-
+    public function boot()
+    {
         // Load migrations
         $this->loadMigrationsFrom(__DIR__.'/migrations');
 

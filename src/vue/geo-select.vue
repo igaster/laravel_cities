@@ -107,7 +107,7 @@ Example Usage
         watch: {
             value: function (newValue, oldValue) {
                 if (!oldValue || newValue != oldValue) {
-                    this.setGeoId(this.geoId);
+                    this.renderLocationsByGeoId(this.geoId);
                 }
             }
         },
@@ -116,12 +116,15 @@ Example Usage
             this.getChildrenOf(null, 0);
 
             if (this.geoId) {
-                this.setGeoId(this.geoId);
+                this.renderLocationsByGeoId(this.geoId);
             }
         },
         methods: {
-            setGeoId: function(geoId) {
-                // @todo
+            renderLocationsByGeoId: function(geoId) {
+                let url = this.apiUrl('/ancestors/' + geoId);
+                axios.get(url).then(function(responce) {
+                    console.log(responce);
+                });
             },
             updateAncestors: function(geoId) {
                 // @todo Получить дерево/родителей Geo локаций
@@ -154,8 +157,6 @@ Example Usage
 
                 let location = this.path[this.path.length-1];
 
-                //this.geoId = location.id;
-
                 return location;
             },
             country() {
@@ -165,6 +166,7 @@ Example Usage
                 this.loadingIndex = level;
 
                 var url = this.apiRootUrl;
+
                 if (id == null) {
                     if (this.countries == null) {
                         url+='/geo/countries?fields=id,name';
@@ -201,6 +203,9 @@ Example Usage
                         console.log(error.response.data);
                     });
             },
+			apiUrl(path) {
+				return this.apiRootUrl + '/' + path;
+			}
         }
     }
 </script>
