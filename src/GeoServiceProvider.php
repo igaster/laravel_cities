@@ -4,20 +4,10 @@ use Illuminate\Support\ServiceProvider;
 
 class GeoServiceProvider extends ServiceProvider
 {
-    /**
-     * Register bindings in the container.
-     *
-     * @return void
-     */
     public function register() {
 
     }
 
-    /**
-     * Bootstrap any application services.
-     *
-     * @return void
-     */
     public function boot() {
 
         // Load migrations
@@ -36,6 +26,8 @@ class GeoServiceProvider extends ServiceProvider
             $this->commands([
                 \Igaster\LaravelCities\commands\seedGeoFile::class,
                 \Igaster\LaravelCities\commands\seedJsonFile::class,
+                \Igaster\LaravelCities\commands\BuildPplTree::class,
+                \Igaster\LaravelCities\commands\Download::class,
             ]);
         }
 
