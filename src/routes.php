@@ -1,6 +1,6 @@
 <?php
 
-Route::group(['prefix' => 'api/geo', 'middleware' => 'api'], function(){
+Route::group(['prefix' => 'geo/'], function() {
 	Route::get('search/{name}/{parent_id?}', 	'Igaster\LaravelCities\GeoController@search');
 	Route::get('item/{id}', 		'\Igaster\LaravelCities\GeoController@item');
 	Route::get('children/{id}', 	'\Igaster\LaravelCities\GeoController@children');

@@ -46,7 +46,8 @@ Example Usage
 			<div v-for="(locations, level) in geo" class="form-group">
 				<p v-if="loadingIndex"><i class="fa fa-cog fa-spin"></i> Loading...</p>
 				<div>
-					<select v-if="locations.length" class="form-control" v-model="selected[level]" @change="updateSelected(level)">
+					<select v-if="locations.length" class="form-control"
+							v-model="selected[level]" @change="updateSelected(level)">
 						<option v-for="item in locations" :value="item">{{item.name}}</option>
 					</select>
 				</div>
@@ -70,6 +71,7 @@ Example Usage
             enableBreadcrumb: {
                 default: true,
             },
+            filterIds: Array,
             value: null
         },
         data() {
@@ -109,8 +111,11 @@ Example Usage
                 let url = this.apiUrl('ancestors/' + geoId);
 
                 axios.get(url).then(function(response) {
-                    console.log(response.data);
+
                     response.data.forEach(function(locations, level) {
+                        locations = self.applyFilter(locations);
+                        self.geo[level] = locations;
+
                         locations.forEach(function(location, i) {
                             if (i == 0) {
                                 self.selected[level] = location;
@@ -122,7 +127,7 @@ Example Usage
                         });
                     });
 
-                    self.geo = response.data;
+                    //self.geo = response.data;
                     self.$forceUpdate();
                 });
             },
@@ -134,6 +139,14 @@ Example Usage
                     self.geo[0] = response.data;
                     self.$forceUpdate();
                 });
+            },
+            applyFilter(locations) {
+                let self = this;
+                let filteredLocations = locations.filter(function (geo) {
+                    return self.filterIds.includes(geo.id); //geo.id.match(/Foo/)
+                });
+
+                return filteredLocations;
             },
             apiUrl(path) {
                 return this.apiRootUrl + '/' + path;

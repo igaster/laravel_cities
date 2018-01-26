@@ -1,4 +1,6 @@
-<?php namespace Igaster\LaravelCities;
+<?php
+
+namespace Igaster\LaravelCities;
 
 use Illuminate\Http\Request;
 
