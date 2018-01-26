@@ -22,47 +22,50 @@ class seedGeoFile extends Command
         if (!\Schema::hasTable('geo')) {
             return;
         }
-
-        $this->geoItems = new geoCollection();
     }
 
     public function sql($sql)
     {
         $result = $this->pdo->query($sql);
-        if($result === false)
+        if ($result === false) {
             throw new Exception("Error in SQL : '$sql'\n".PDO::errorInfo(), 1);
-            
+        }
+
         return $result->fetch();
-    }    
+    }
 
     public function buildDbTree($item, $count = 1, $depth = 0)
     {
-        $item->left=$count++;
-        $item->depth=$depth;
+        $item->left = $count++;
+        $item->depth = $depth;
         foreach ($item->getChildren() as $child) {
             $count = $this->buildDbTree($child, $count, $depth+1);
         }
-        $item->right=$count++;
+        $item->right = $count++;
+
         return $count;
     }
-    
+
     public function printTree($item)
     {
         $levelStr= str_repeat('--', $item->depth);
         $this->info(sprintf("%s %s [%d,%d]", $levelStr, $item->getName(),$item->left,$item->right));
-        foreach ($item->getChildren() as $child)
+        foreach ($item->getChildren() as $child) {
             $this->printTree($child);
+        }
     }
 
     public function handle()
     {
+        $this->geoItems = new geoCollection();
+
         $start = microtime(true);
-
-        $country = $this->argument('country');
-
-        $sourceName = $country ? strtoupper($country) : 'allCountries';
+        $country = strtoupper($this->argument('country'));
+        $sourceName = $country ? $country : 'allCountries';
         $fileName = storage_path("geo/{$sourceName}.txt");
         $isAppend = $this->option('append');
+
+        $this->info("Start seeding for $country");
 
         // Read Raw file
         $this->info("Reading File '$fileName'");
@@ -94,8 +97,8 @@ class seedGeoFile extends Command
                 case 'ADM3':   // 8 sec
                 case 'PPLA':   // областные центры
                 case 'PPLA2':  // Корсунь
-                //case 'PPL':    // Яблунівка
-                               // 185 sec
+                    //case 'PPL':    // Яблунівка
+                    // 185 sec
                     $this->geoItems->add(new geoItem($line, $this->geoItems));
                     $count++;
                     break;
@@ -109,8 +112,8 @@ class seedGeoFile extends Command
         $this->info(" Finished Reading File. $count items loaded</info>");
 
         // Read hierarchy
-        ini_set('xdebug.max_nesting_level', 5000);
-        $fileName = storage_path('geo/hierarchy.txt');
+        //ini_set('xdebug.max_nesting_level', 5000);
+        $fileName = storage_path("geo/hierarchy-$country.txt");
         $this->info("Opening File '$fileName'</info>");
         $handle = fopen($fileName, 'r');
         $filesize = filesize($fileName);
@@ -131,7 +134,6 @@ class seedGeoFile extends Command
         }
         $this->info(" Hierarcy building completed. $count items loaded</info>");
 
-        //
 
         // Build Tree
         $count = 0; $countOrphan = 0;
@@ -140,7 +142,7 @@ class seedGeoFile extends Command
         $maxBoundary = isset($result['maxRight']) ?  $result['maxRight']+1 : 0;
         foreach ($this->geoItems->items as $item) {
             if ($item->parentId === null){
-                
+
                 if ($item->data[7] !== 'PCLI') {
                     // $this->info("- Skiping Orphan {$item->data[2]} #{$item->data[0]}");
                     $countOrphan++;
@@ -171,9 +173,11 @@ class seedGeoFile extends Command
 
         $count = 0;
         $totalCount = count($this->geoItems->items);
+
         $progressBar = new \Symfony\Component\Console\Helper\ProgressBar($this->output, 100);
-        foreach ($this->geoItems->items as $item) {
-            if ( $stmt->execute([
+        foreach ($this->geoItems->items as $item)
+        {
+            $params = [
                 ':id'           => $item->getId(),
                 ':parent_id'    => $item->parentId,
                 ':left'         => $item->left,
@@ -188,7 +192,9 @@ class seedGeoFile extends Command
                 ':lat'          => $item->data[4],
                 ':long'         => $item->data[5],
                 ':timezone'     => $item->data[17],
-            ]) === false){
+            ];
+
+            if ($stmt->execute($params) === false) {
                 throw new Exception("Error in SQL : '$sql'\n".PDO::errorInfo(), 1);
             }
             $progress = $count++/$totalCount*100;

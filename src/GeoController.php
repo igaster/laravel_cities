@@ -66,18 +66,28 @@ class GeoController extends \Illuminate\Routing\Controller
     public function ancestors($id)
     {
         $current = Geo::find($id);
-        $ancestors = $current->ancenstors()->get();
+        $ancestors = $current->ancenstors()->get()->sortBy('a1code')->values();
         $ancestors->push($current);
 
         $result = collect();
         foreach ($ancestors as $i => $ancestor)
         {
-            $locations = ($i === 0) ? Geo::getCountries() : $ancestor->getParent()->getChildren();
+            if ($i === 0) {
+                $locations = Geo::getCountries();
+            } else {
+                $parent = $ancestor->getParent();
+                if (!$parent) {
+                    continue;
+                }
+
+                $locations = $parent->getChildren();
+            }
+
             $selected = $locations->firstWhere('id', $ancestor->id);
             $selected && $selected->isSelected = true;
             $result->push($locations);
 
-            if ($i == $ancestors->count()-1) {
+            if ($i == $ancestors->count()-1 && $ancestor) {
                 $childrens = $ancestor->getChildren();
                 if ($childrens->count()) {
                     $result->push($childrens);

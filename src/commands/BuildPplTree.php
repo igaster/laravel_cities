@@ -21,6 +21,8 @@ class BuildPplTree extends Command
                 $this->buildPplHierarchy($country);
                 $this->mergeHierarchies($country);
             }
+
+            //$this->mergeAllHierarchies($countries);
         } catch (\Exception $e) {
             $this->error($e->getMessage());
         }
@@ -94,6 +96,29 @@ class BuildPplTree extends Command
             storage_path("geo/hierarchy-origin.txt"),
             storage_path("geo/hierarchy-ppl-$country.txt"),
         ];
+
+        $lines = [];
+        foreach ($files as $file) {
+            foreach(file($file) as $line) {
+                $lines[] = trim($line);
+            }
+        }
+        $lines = array_unique($lines);
+
+        $content = implode(PHP_EOL, $lines);
+
+        file_put_contents(storage_path("geo/hierarchy-$country.txt"), $content);
+    }
+
+    private function mergeAllHierarchies($countries)
+    {
+        $files = [
+            storage_path("geo/hierarchy-origin.txt")
+        ];
+
+        foreach ($countries as $country) {
+            $files[] = storage_path("geo/hierarchy-ppl-$country.txt");
+        }
 
         $lines = [];
         foreach ($files as $file) {
