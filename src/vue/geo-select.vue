@@ -48,6 +48,7 @@ Example Usage
 				<div>
 					<select v-if="locations.length" class="form-control"
 							v-model="selected[level]" @change="updateSelected(level)">
+						<option :value="null"><!--Please choice location..--></option>
 						<option v-for="item in locations" :value="item">{{item.name}}</option>
 					</select>
 				</div>
@@ -90,7 +91,7 @@ Example Usage
         },
         watch: {
             value: function (newValue, oldValue) {
-                if (!oldValue || newValue != oldValue) {
+                if (!oldValue) {
                     this.renderLocationsByGeoId(newValue);
                 }
             }
@@ -106,21 +107,28 @@ Example Usage
             }
         },
         methods: {
+            renderCountries() {
+                let self = this;
+                let url = this.apiUrl('countries');
+
+                axios.get(url).then(function(response) {
+                    self.resetSelects(0);
+                    self.geo[0] = response.data;
+                    self.selected[0] = null;
+                    self.$forceUpdate();
+                });
+            },
             renderLocationsByGeoId: function(geoId) {
                 let self = this;
                 let url = this.apiUrl('ancestors/' + geoId);
 
                 axios.get(url).then(function(response) {
-
                     response.data.forEach(function(locations, level) {
                         locations = self.applyFilter(locations);
                         self.geo[level] = locations;
+                        self.selected[level] = null;
 
                         locations.forEach(function(location, i) {
-                            if (i == 0) {
-                                self.selected[level] = location;
-                            }
-
                             if (location.isSelected) {
                                 self.selected[level] = location;
                             }
@@ -131,14 +139,9 @@ Example Usage
                     self.$forceUpdate();
                 });
             },
-            renderCountries() {
-                let self = this;
-                let url = this.apiUrl('countries');
-
-                axios.get(url).then(function(response) {
-                    self.geo[0] = response.data;
-                    self.$forceUpdate();
-                });
+            resetSelects(level) {
+                this.geo = this.geo.splice(0, level+1);
+                this.selected = this.selected.splice(0, level+1);
             },
             applyFilter(locations) {
                 let self = this;
@@ -152,6 +155,8 @@ Example Usage
                 return this.apiRootUrl + '/' + path;
             },
             updateSelected(level) {
+                this.resetSelects(level);
+
                 let location = this.getSelectedByLevel(level);
                 this.$emit('input', location.id);
 
