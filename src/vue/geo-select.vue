@@ -135,7 +135,6 @@ Example Usage
                         });
                     });
 
-                    //self.geo = response.data;
                     self.$forceUpdate();
                 });
             },
@@ -145,6 +144,11 @@ Example Usage
             },
             applyFilter(locations) {
                 let self = this;
+
+                if (!self.filterIds || !self.filterIds.length) {
+                    return locations;
+                }
+
                 let filteredLocations = locations.filter(function (geo) {
                     return self.filterIds.includes(geo.id); //geo.id.match(/Foo/)
                 });
@@ -159,6 +163,7 @@ Example Usage
 
                 let location = this.getSelectedByLevel(level);
                 this.$emit('input', location.id);
+                //this.$emit('change', location.id);
 
                 this.renderLocationsByGeoId(location.id);
             },
