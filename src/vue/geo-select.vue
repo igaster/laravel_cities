@@ -30,11 +30,11 @@ Example Usage
 			<input type="hidden" :name="prefix+'-name'" :value="location.name">
 			<input type="hidden" :name="prefix+'-long'" :value="location.long">
 			<input type="hidden" :name="prefix+'-lat'" :value="location.lat">
-			<input type="hidden" :name="prefix+'-country'" :value="country().name">
+			<input type="hidden" :name="prefix+'-timezone'" :value="location.timezone">
 			<input type="hidden" :name="prefix+'-country-code'" :value="location.country">
 		</div>
 
-		<div v-show="breadCrumb" class='geo-breadcrumb'>
+		<div v-if="breadCrumb" class='geo-breadcrumb'>
 			<div class="form-group">
 				<label>Your Location:</label><br>
 				<span class="geo-breadcrumb-item" v-for="item in path">{{item.name}}</span>
@@ -42,26 +42,13 @@ Example Usage
 				<div class="clearfix"></div>
 			</div>
 		</div>
-
-		<div v-show="!breadCrumb">
-			<div class="form-group">
-				<label>Select your Location: </label>
-				<p v-if="loadingIndex == 0"><i class="fa fa-cog fa-spin"></i> Loading Countries...</p>
-				<select v-else class="form-control _select2" v-model="values[0]" @change="selectByIndex(0)">
-					<option v-for="item in items[0]" :value="item.id">{{item.name}}</option>
-				</select>
-			</div>
-
-			<div v-for="i in count" class="form-group">
-				<p v-if="loadingIndex == i"><i class="fa fa-cog fa-spin"></i> Loading...</p>
-				<div v-else>
-					<select v-if="hasItems(i)" class="form-control _select2" v-model="values[i]" @change="selectByIndex(i)">
-						<option v-for="item in items[i]" :value="item.id">{{item.name}}</option>
+		<div v-else>
+			<div v-for="(locations, level) in geo" class="form-group">
+				<p v-if="loadingIndex"><i class="fa fa-cog fa-spin"></i> Loading...</p>
+				<div>
+					<select v-if="locations.length" class="form-control" v-model="selected[level]" @change="updateSelected(level)">
+						<option v-for="item in locations" :value="item">{{item.name}}</option>
 					</select>
-					<div v-if="!hasItems(i) && enableBreadcrumb">
-						<a class="btn btn-xs btn-default pull-right" href="#" @click="breadCrumb = true">Confirm Location</a>
-						<div class="clearfix"></div>
-					</div>
 				</div>
 			</div>
 		</div>
@@ -75,13 +62,10 @@ Example Usage
     export default {
         props: {
             apiRootUrl: {
-                default: '/api',
+                default: '/api/geo',
             },
             prefix: {
                 default: 'geo',
-            },
-            countries: {
-                default: null,
             },
             enableBreadcrumb: {
                 default: true,
@@ -91,121 +75,78 @@ Example Usage
         data() {
             return {
                 geoId: this.value,
-                count: 0,
-                items: [],
-                values: [],
-                path: [],
+                geo: [],
+                selected: [],
                 loadingIndex: null,
                 breadCrumb: false,
             };
         },
         computed: {
             location: function() {
-                return this.getLocation();
+                return this.selected.length ? this.selected[this.selected.length - 1] : {};
             }
         },
         watch: {
             value: function (newValue, oldValue) {
                 if (!oldValue || newValue != oldValue) {
-                    this.renderLocationsByGeoId(this.geoId);
+                    this.renderLocationsByGeoId(newValue);
                 }
             }
         },
         created: function () {
-            //mounted: function () {
-            this.getChildrenOf(null, 0);
+            window.geo = this;
 
             if (this.geoId) {
                 this.renderLocationsByGeoId(this.geoId);
+            } else {
+                //this.getChildrenOf(null, 0);
+                this.renderCountries();
             }
         },
         methods: {
             renderLocationsByGeoId: function(geoId) {
-                let url = this.apiUrl('/ancestors/' + geoId);
-                axios.get(url).then(function(responce) {
-                    console.log(responce);
+                let self = this;
+                let url = this.apiUrl('ancestors/' + geoId);
+
+                axios.get(url).then(function(response) {
+                    console.log(response.data);
+                    response.data.forEach(function(locations, level) {
+                        locations.forEach(function(location, i) {
+                            if (i == 0) {
+                                self.selected[level] = location;
+                            }
+
+                            if (location.isSelected) {
+                                self.selected[level] = location;
+                            }
+                        });
+                    });
+
+                    self.geo = response.data;
+                    self.$forceUpdate();
                 });
             },
-            updateAncestors: function(geoId) {
-                // @todo Получить дерево/родителей Geo локаций
+            renderCountries() {
+                let self = this;
+                let url = this.apiUrl('countries');
+
+                axios.get(url).then(function(response) {
+                    self.geo[0] = response.data;
+                    self.$forceUpdate();
+                });
             },
-            selectByIndex(index) {
-                var that = this;
-
-                if (this.values[index] > 0) {
-                    this.path[index] = this.items[index].find(function(item) {
-                        return (item.id == that.values[index]);
-                    });
-                    this.setIndex(index);
-                    this.getChildrenOf(this.values[index], index+1);
-
-                    this.$emit('input', this.location.id);
-                }
+            apiUrl(path) {
+                return this.apiRootUrl + '/' + path;
             },
-            setIndex(index) {
-                this.count = index+1;
-                this.values.splice(index+1,10);
-                this.path.splice(index+1,10);
+            updateSelected(level) {
+                let location = this.getSelectedByLevel(level);
+                this.$emit('input', location.id);
+
+                this.renderLocationsByGeoId(location.id);
             },
-            hasItems(index) {
-                return (this.items[index] instanceof Array) && (this.items[index].length > 0);
-            },
-            getLocation() {
-                if (this.path.length == 0) {
-                    return null;
-                }
-
-                let location = this.path[this.path.length-1];
-
-                return location;
-            },
-            country() {
-                return this.path[0];
-            },
-            getChildrenOf: function(id, level) {
-                this.loadingIndex = level;
-
-                var url = this.apiRootUrl;
-
-                if (id == null) {
-                    if (this.countries == null) {
-                        url+='/geo/countries?fields=id,name';
-                    } else {
-                        url+='/geo/items/' + this.countries;
-                    }
-                } else {
-                    url+='/geo/children/'+id;
-                }
-
-                axios.get(url, {
-                    //
-                }).then(response => {
-                    if (!response.data.length) {
-                        this.loadingIndex = null;
-                        return;
-                    }
-
-                    this.items[level] = response.data;
-                    this.items[level].unshift({id: 0, name: 'Choice...', a1code: "", timezone: ""});
-                    this.breadCrumb = this.enableBreadcrumb && !this.hasItems(level);
-                    this.loadingIndex = null;
-                    this.$forceUpdate();
-
-                    if (this.items[level].length == 1) {
-                        this.values[level] = this.items[level][0].id;
-                        this.selectByIndex(level);
-                    }
-
-                    this.values[level] = 0;
-                })
-                    .catch(error => {
-                        alert('Error');
-                        console.log(error.response.data);
-                    });
-            },
-			apiUrl(path) {
-				return this.apiRootUrl + '/' + path;
-			}
+            getSelectedByLevel(level) {
+                return this.selected[level];
+            }
         }
     }
 </script>

@@ -70,14 +70,17 @@ class GeoController extends \Illuminate\Routing\Controller
         $result = collect();
         foreach ($ancestors as $i => $ancestor)
         {
-            if ($i === 0) {
-                $locations = Geo::getCountries();
-                $result->push($locations);
-                continue;
-            }
-
-            $locations = $ancestor->getParent()->getChildren();
+            $locations = ($i === 0) ? Geo::getCountries() : $ancestor->getParent()->getChildren();
+            $selected = $locations->firstWhere('id', $ancestor->id);
+            $selected && $selected->isSelected = true;
             $result->push($locations);
+
+            if ($i == $ancestors->count()-1) {
+                $childrens = $ancestor->getChildren();
+                if ($childrens->count()) {
+                    $result->push($childrens);
+                }
+            }
         }
 
         $result = $this->applyFilter($result);
