@@ -1,7 +1,7 @@
 <?php
 
 Route::group(['prefix' => 'geo/'], function() {
-	Route::get('search/{name}/{parent_id?}', 	'Igaster\LaravelCities\GeoController@search');
+	Route::get('search/{name}/{parent_id?}', 	'\Igaster\LaravelCities\GeoController@search');
 	Route::get('item/{id}', 		'\Igaster\LaravelCities\GeoController@item');
 	Route::get('children/{id}', 	'\Igaster\LaravelCities\GeoController@children');
 	Route::get('parent/{id}', 	'\Igaster\LaravelCities\GeoController@parent');
