@@ -163,7 +163,6 @@ Example Usage
                 if (this.hideEmpty) return;
 
                 for (let i = 0; i < 3; i++) {
-                    console.log('supplement: ', i);
                     if (!this.geo[i]) {
                         this.geo[i] = [];
                         this.selected[i] = null;
