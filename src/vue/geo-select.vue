@@ -13,14 +13,23 @@ Example Usage
 
 	<form action="/submit/url" method="POST">
 		<geo-select
+		    v-model="model.geo_id"
 			prefix = "my-prefix"
-			api-root-url = "\xxx\yyy"
+			api-root-url = "/api/geo"
 			:enable-breadcrumb = "true"
 			:countries = "[390903,3175395]"
+			:filterIds="[1,2,3]"
 		></geo-select>
 		<input type="submit">
 	</form>
 
+	// OR
+
+	<geo-select v-model="user.geo_id" :filterIds="[2921044, 2822542]" @input="yourGeoValidation()"
+			:enable-labels="true" :enable-breadcrumb="false" :hide-empty="false">
+	</geo-select>
+
+	@see Example: https://i.imgur.com/O5ZlKEI.png
 -->
 
 <template>
@@ -34,27 +43,31 @@ Example Usage
 			<input type="hidden" :name="prefix+'-country-code'" :value="location.country">
 		</div>
 
-		<div v-if="breadCrumb" class='geo-breadcrumb'>
-			<div class="form-group">
-				<label>Your Location:</label><br>
-				<span class="geo-breadcrumb-item" v-for="item in path">{{item.name}}</span>
-				<a class="btn btn-xs btn-default pull-right" href="#" @click="breadCrumb=false">Change Location...</a>
-				<div class="clearfix"></div>
+		<div>
+			<div v-if="breadCrumb" class='geo-breadcrumb'>
+				<div class="form-group">
+					<label>Your Location:</label><br>
+					<span class="geo-breadcrumb-item" v-for="item in path">{{item.name}}</span>
+					<a class="btn btn-xs btn-default pull-right" href="#" @click="breadCrumb=false">Change Location...</a>
+					<div class="clearfix"></div>
+				</div>
 			</div>
-		</div>
-		<div v-else>
-			<div v-for="(locations, level) in geo" class="form-group">
-				<p v-if="loadingIndex"><i class="fa fa-cog fa-spin"></i> Loading...</p>
-				<div>
-					<select v-if="locations.length" class="form-control"
-							v-model="selected[level]" @change="updateSelected(level)">
-						<option :value="null"><!--Please choice location..--></option>
-						<option v-for="item in locations" :value="item">{{item.name}}</option>
-					</select>
+			<div v-else>
+				<div v-for="(locations, level) in geo" class="form-group row">
+					<label class="col-2 col-form-label" v-if="enableLabels">
+						{{ ['Country', 'State/Province', 'City'][level] }}
+					</label>
+					<p v-if="loadingIndex"><i class="fa fa-cog fa-spin"></i> Loading...</p>
+					<div class="col-8">
+						<select v-if="!hideEmpty || locations.length" class="form-control"
+								v-model="selected[level]" @change="updateSelected(level)" placeholder="Test">
+							<option :value="null" disabled>Select {{ ['country', 'state/province', 'city'][level] }}</option>
+							<option v-for="item in locations" :value="item">{{item.name}}</option>
+						</select>
+					</div>
 				</div>
 			</div>
 		</div>
-
 	</div>
 </template>
 
@@ -62,6 +75,7 @@ Example Usage
     import axios from 'axios'
 
     export default {
+        name: 'geo-select',
         props: {
             apiRootUrl: {
                 default: '/api/geo',
@@ -73,7 +87,13 @@ Example Usage
                 default: true,
             },
             filterIds: Array,
-            value: null
+            value: null,
+            enableLabels: {
+                default: false
+            },
+            hideEmpty: {
+                default: true
+            }
         },
         data() {
             return {
@@ -102,7 +122,6 @@ Example Usage
             if (this.geoId) {
                 this.renderLocationsByGeoId(this.geoId);
             } else {
-                //this.getChildrenOf(null, 0);
                 this.renderCountries();
             }
         },
@@ -115,6 +134,7 @@ Example Usage
                     self.resetSelects(0);
                     self.geo[0] = response.data;
                     self.selected[0] = null;
+                    self.supplement();
                     self.$forceUpdate();
                 });
             },
@@ -135,8 +155,20 @@ Example Usage
                         });
                     });
 
+                    self.supplement();
                     self.$forceUpdate();
                 });
+            },
+            supplement() {
+                if (this.hideEmpty) return;
+
+                for (let i = 0; i < 3; i++) {
+                    console.log('supplement: ', i);
+                    if (!this.geo[i]) {
+                        this.geo[i] = [];
+                        this.selected[i] = null;
+                    }
+                }
             },
             resetSelects(level) {
                 this.geo = this.geo.splice(0, level+1);
