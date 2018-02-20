@@ -53,19 +53,21 @@ Example Usage
 				</div>
 			</div>
 			<div v-else>
-				<div v-for="(locations, level) in geo" class="form-group row">
-					<label class="col-2 col-form-label" v-if="enableLabels">
-						{{ ['Country', 'State/Province', 'City'][level] }}
-					</label>
-					<p v-if="loadingIndex"><i class="fa fa-cog fa-spin"></i> Loading...</p>
-					<div class="col-8">
-						<select v-if="!hideEmpty || locations.length" class="form-control"
-								v-model="selected[level]" @change="updateSelected(level)" placeholder="Test">
-							<option :value="null" disabled>Select {{ ['country', 'state/province', 'city'][level] }}</option>
-							<option v-for="item in locations" :value="item">{{item.name}}</option>
-						</select>
+				<transition-group name="smoothing" tag="div">
+					<div v-for="(locations, level) in geo" class="form-group row" :key="'level-'+level">
+						<label class="col-2 col-form-label" v-if="enableLabels">
+							{{ ['Country', 'State/Province', 'City'][level] }}
+						</label>
+						<p v-if="loadingIndex"><i class="fa fa-cog fa-spin"></i> Loading...</p>
+						<div class="col-8">
+							<select v-if="!hideEmpty || locations.length" class="form-control"
+									v-model="selected[level]" @change="updateSelected(level)" placeholder="Test">
+								<option :value="null" disabled>Select {{ ['country', 'state/province', 'city'][level] }}</option>
+								<option v-for="item in locations" :value="item">{{item.name}}</option>
+							</select>
+						</div>
 					</div>
-				</div>
+				</transition-group>
 			</div>
 		</div>
 	</div>
@@ -206,6 +208,8 @@ Example Usage
 </script>
 
 <style lang="scss">
+	.smoothing-leave-active { transition: height 1s; }
+
 	.geo-breadcrumb{
 		list-style: none;
 		.geo-breadcrumb-item {
