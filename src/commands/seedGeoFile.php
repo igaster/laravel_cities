@@ -195,8 +195,10 @@ class seedGeoFile extends Command
             ];
 
             if ($stmt->execute($params) === false) {
-                throw new Exception("Error in SQL : '$sql'\n".PDO::errorInfo(), 1);
+                $error = "Error in SQL : '$sql'\n".PDO::errorInfo()."\nParams: \n$params";
+                throw new \Exception($error, 1);
             }
+
             $progress = $count++/$totalCount*100;
             $progressBar->setProgress($progress);
         }

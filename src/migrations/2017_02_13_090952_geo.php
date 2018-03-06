@@ -27,7 +27,7 @@ class Geo extends Migration
                 $table->bigInteger('population');
                 $table->decimal('lat',9,6);
                 $table->decimal('long',9,6);
-                $table->char('timezone',20);
+                $table->char('timezone',30);
             });
         }
 
