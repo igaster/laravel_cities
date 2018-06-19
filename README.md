@@ -51,7 +51,7 @@ artisan geo:seed
 Note: If you don't want all the countries, you can download only country specific files (eg US.txt) and import each one of them with:
 
 ```
-artisan geo:load US --append
+artisan geo:seed US --append
 ```
 
 # Seed with custom data
