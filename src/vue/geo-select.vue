@@ -9,17 +9,20 @@ Creates the following inputs that will be submited:
 	- geo-country
 	- geo-country-code
 
-Example Usage
+Example Usage:
 
 	<form action="/submit/url" method="POST">
 		<geo-select
 		    v-model="model.geo_id"
-			prefix = "my-prefix"
-			api-root-url = "/api/geo"
-			:enable-breadcrumb = "true"
-			:countries = "[390903,3175395]"
-			:filterIds="[1,2,3]"
-		></geo-select>
+		    @input="onSelectGeoYourMethod"
+		    @apply="onLoadGeoDataByInitialIdOrChange"
+		    ref="geoSelect"
+			prefix="my-prefix"
+			api-root-url="/api/geo"
+			:enable-breadcrumb="true"
+			:hide-empty="false"
+			:countries="[390903,3175395]"
+			:filterIds="[1,2,3]" />
 		<input type="submit">
 	</form>
 
@@ -34,13 +37,13 @@ Example Usage
 
 <template>
 	<div>
-		<div v-if="location">
+		<div v-if="selectedLocation">
 			<input type="hidden" :name="prefix+'-id'" v-model="value">
-			<input type="hidden" :name="prefix+'-name'" :value="location.name">
-			<input type="hidden" :name="prefix+'-long'" :value="location.long">
-			<input type="hidden" :name="prefix+'-lat'" :value="location.lat">
-			<input type="hidden" :name="prefix+'-timezone'" :value="location.timezone">
-			<input type="hidden" :name="prefix+'-country-code'" :value="location.country">
+			<input type="hidden" :name="prefix+'-name'" :value="selectedLocation.name">
+			<input type="hidden" :name="prefix+'-long'" :value="selectedLocation.long">
+			<input type="hidden" :name="prefix+'-lat'" :value="selectedLocation.lat">
+			<input type="hidden" :name="prefix+'-timezone'" :value="selectedLocation.timezone">
+			<input type="hidden" :name="prefix+'-country-code'" :value="selectedLocation.country">
 		</div>
 
 		<div>
@@ -55,13 +58,14 @@ Example Usage
 			<div v-else>
 				<transition-group name="smoothing" tag="div">
 					<div v-for="(locations, level) in geo" class="form-group row" :key="'level-'+level">
-						<label class="col-2 col-form-label" v-if="enableLabels">
+						<label class="col-sm-12 col-md-3 col-form-label" v-if="enableLabels">
 							{{ ['Country', 'State/Province', 'City'][level] }}
 						</label>
 						<p v-if="loadingIndex"><i class="fa fa-cog fa-spin"></i> Loading...</p>
-						<div class="col-8">
+						<div class="col-sm-12 col-md-9">
+                            <div class="select-wrapper"></div>
 							<select v-if="!hideEmpty || locations.length" class="form-control"
-									v-model="selected[level]" @change="updateSelected(level)" placeholder="Test">
+									v-model="selectedByLevel[level]" @change="updateSelected(level)" placeholder="Test">
 								<option :value="null" disabled>Select {{ ['country', 'state/province', 'city'][level] }}</option>
 								<option v-for="item in locations" :value="item">{{item.name}}</option>
 							</select>
@@ -90,42 +94,36 @@ Example Usage
             },
             filterIds: Array,
             value: null,
-            enableLabels: {
+			enableLabels: {
                 default: false
-            },
+			},
             hideEmpty: {
                 default: true
-            }
+			}
         },
         data() {
             return {
                 geoId: this.value,
-                geo: [],
-                selected: [],
+                geo: [], // All locations by level
+                selectedByLevel: [],
+                selectedLocation: null,
                 loadingIndex: null,
                 breadCrumb: false,
             };
         },
-        computed: {
-            location: function() {
-                return this.selected.length ? this.selected[this.selected.length - 1] : {};
-            }
-        },
         watch: {
             value: function (newValue, oldValue) {
-                if (!oldValue) {
-                    this.renderLocationsByGeoId(newValue);
-                }
+                if (!oldValue || !newValue) { this.renderLocationsByGeoId(newValue); }
             }
         },
-        created: function () {
+        created: function() {
             window.geo = this;
 
             if (this.geoId) {
                 this.renderLocationsByGeoId(this.geoId);
             } else {
                 this.renderCountries();
-            }
+			}
         },
         methods: {
             renderCountries() {
@@ -135,7 +133,7 @@ Example Usage
                 axios.get(url).then(function(response) {
                     self.resetSelects(0);
                     self.geo[0] = response.data;
-                    self.selected[0] = null;
+                    self.selectedByLevel[0] = null;
                     self.supplement();
                     self.$forceUpdate();
                 });
@@ -148,61 +146,62 @@ Example Usage
                     response.data.forEach(function(locations, level) {
                         locations = self.applyFilter(locations);
                         self.geo[level] = locations;
-                        self.selected[level] = null;
+                        self.selectedByLevel[level] = null;
 
                         locations.forEach(function(location, i) {
-                            if (location.isSelected) {
-                                self.selected[level] = location;
-                            }
+							if (location.isSelected) {
+                                self.selectedByLevel[level] = location;
+                                self.selectedLocation = self.selectedByLevel[level];
+							}
                         });
                     });
 
                     self.supplement();
                     self.$forceUpdate();
+
+                    self.$emit('apply', self.selectedLocation.id, self.selectedLocation);
                 });
             },
-            supplement() {
+			supplement() {
                 if (this.hideEmpty) return;
 
-                for (let i = 0; i < 3; i++) {
+				for (let i = 0; i < 3; i++) {
                     if (!this.geo[i]) {
                         this.geo[i] = [];
-                        this.selected[i] = null;
-                    }
-                }
-            },
-            resetSelects(level) {
+                        this.selectedByLevel[i] = null;
+					}
+				}
+			},
+			resetSelects(level) {
                 this.geo = this.geo.splice(0, level+1);
-                this.selected = this.selected.splice(0, level+1);
-            },
-            applyFilter(locations) {
+                this.selectedByLevel = this.selectedByLevel.splice(0, level+1);
+			},
+			applyFilter(locations) {
                 let self = this;
 
                 if (!self.filterIds || !self.filterIds.length) {
                     return locations;
-                }
+				}
 
                 let filteredLocations = locations.filter(function (geo) {
                     return self.filterIds.includes(geo.id); //geo.id.match(/Foo/)
                 });
 
                 return filteredLocations;
-            },
+			},
             apiUrl(path) {
                 return this.apiRootUrl + '/' + path;
             },
             updateSelected(level) {
                 this.resetSelects(level);
 
-                let location = this.getSelectedByLevel(level);
-                this.$emit('input', location.id);
-                //this.$emit('change', location.id);
-
-                this.renderLocationsByGeoId(location.id);
-            },
-            getSelectedByLevel(level) {
-                return this.selected[level];
-            }
+                let selectedLocation = this.getSelectedByLevel(level);
+                this.$emit('input', selectedLocation.id, selectedLocation); // @note Update v-model!
+                this.renderLocationsByGeoId(selectedLocation.id);
+			},
+			getSelectedByLevel(level) {
+                return this.selectedByLevel[level];
+			}
         }
     }
 </script>
