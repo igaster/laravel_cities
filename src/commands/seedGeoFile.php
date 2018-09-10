@@ -109,7 +109,7 @@ class seedGeoFile extends Command
 
         // Build Tree
         $count = 0; $countOrphan = 0;
-        $sql = 'SELECT MAX(`right`) as maxRight FROM geo';
+        $sql = 'SELECT MAX("right") as maxRight FROM geo';
         $result = $this->sql($sql);
         $maxBoundary = isset($result['maxRight']) ?  $result['maxRight']+1 : 0;
         foreach ($this->geoItems->items as $item) {
@@ -139,8 +139,7 @@ class seedGeoFile extends Command
 
         // Store Tree in DB
         $this->info("Writing in Database</info>");
-        $stmt = $this->pdo->prepare("INSERT INTO geo (`id`, `parent_id`, `left`, `right`, `depth`, `name`, `alternames`, `country`, `level`, `population`, `lat`, `long`) VALUES (:id, :parent_id, :left, :right, :depth, :name, :alternames, :country, :level, :population, :lat, :long)");
-
+        $stmt = $this->pdo->prepare("INSERT INTO geo (\"id\", \"parent_id\", \"left\", \"right\", \"depth\", \"name\", \"alternames\", \"country\", \"level\", \"population\", \"lat\", \"long\") VALUES (:id, :parent_id, :left, :right, :depth, :name, :alternames, :country, :level, :population, :lat, :long)");
 
         $count = 0;
         $totalCount = count($this->geoItems->items);
