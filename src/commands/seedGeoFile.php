@@ -11,9 +11,14 @@ class seedGeoFile extends Command
     protected $description = 'Load + Parse + Save to DB a geodata file.';
 
     private $pdo;
+    private $driver;
 
     public function __construct() {
         parent::__construct();
+        
+        $connection = config('database.default');
+        $this->driver = strtolower(config("database.connections.{$connection}.driver"));
+        
         $this->pdo = \DB::connection()->getPdo(\PDO::FETCH_ASSOC);
         if (!\Schema::hasTable('geo'))
             return;
@@ -139,7 +144,12 @@ class seedGeoFile extends Command
 
         // Store Tree in DB
         $this->info("Writing in Database</info>");
-        $stmt = $this->pdo->prepare("INSERT INTO geo (\"id\", \"parent_id\", \"left\", \"right\", \"depth\", \"name\", \"alternames\", \"country\", \"level\", \"population\", \"lat\", \"long\") VALUES (:id, :parent_id, :left, :right, :depth, :name, :alternames, :country, :level, :population, :lat, :long)");
+        
+        if ($this->driver == 'mysql') {
+            $stmt = $this->pdo->prepare("INSERT INTO geo (`id`, `parent_id`, `left`, `right`, `depth`, `name`, `alternames`, `country`, `level`, `population`, `lat`, `long`) VALUES (:id, :parent_id, :left, :right, :depth, :name, :alternames, :country, :level, :population, :lat, :long)");
+        } else {
+            $stmt = $this->pdo->prepare("INSERT INTO geo (\"id\", \"parent_id\", \"left\", \"right\", \"depth\", \"name\", \"alternames\", \"country\", \"level\", \"population\", \"lat\", \"long\") VALUES (:id, :parent_id, :left, :right, :depth, :name, :alternames, :country, :level, :population, :lat, :long)");
+        }
 
         $count = 0;
         $totalCount = count($this->geoItems->items);
