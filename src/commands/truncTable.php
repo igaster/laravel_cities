@@ -35,6 +35,13 @@ class truncTable extends Command
      */
     public function handle()
     {
+        /*
+         *  Some Time You need to have relation to this model
+         *  So first Laravel should ignore this.
+         */
+        \Eloquent::unguard();
+        \DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        $this->info('Relation checks disabled');
         \DB::table('geo')->truncate();
         $this->info('Table "geo" is empty now.');
     }
