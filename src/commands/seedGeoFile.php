@@ -169,6 +169,9 @@ class seedGeoFile extends Command
                 ':lat'          => $item->data[4],
                 ':long'         => $item->data[5]
             ]) === false){
+                //Before throwing enabling key checks
+                \DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+                $this->info('Relation checks enabled');
                 throw new Exception("Error in SQL : '$sql'\n".PDO::errorInfo(), 1);
             }
             $progress = $count++/$totalCount*100;
@@ -176,8 +179,13 @@ class seedGeoFile extends Command
         }
         $progressBar->finish();
 
+        //Lets get back FOREIGN_KEY_CHECKS to laravel
+        \DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        $this->info('Relation checks enabled');
+
         $this->info(" Done</info>");
         $time_elapsed_secs = microtime(true) - $start;
         $this->info("Timing: $time_elapsed_secs sec</info>");
+
     }
 }
