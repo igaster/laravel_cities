@@ -116,7 +116,7 @@ class seedGeoFile extends Command
         $count = 0; $countOrphan = 0;
         $sql = 'SELECT MAX("right") as maxRight FROM geo';
         $result = $this->sql($sql);
-        $maxBoundary = isset($result['maxRight']) ?  $result['maxRight']+1 : 0;
+        $maxBoundary = (isset($result['maxRight']) && is_numeric($result['maxRight'])) ?  $result['maxRight']+1 : 0;
         foreach ($this->geoItems->items as $item) {
             if($item->parentId === null){
                 
