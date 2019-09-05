@@ -13,10 +13,10 @@ class apiTest extends abstractTest
     	// Register API routes
 		Geo::ApiRoutes();
 
-		// Register Service providers
-        return [
-            \Igaster\LaravelCities\geoServiceProvider::class,
-        ];
+//		// Register Service providers
+//        return [
+//            \Igaster\LaravelCities\geoServiceProvider::class,
+//        ];
     }
 
     // -----------------------------------------------
@@ -30,7 +30,7 @@ class apiTest extends abstractTest
 			throw new Exception("API Call to [$url] returned status code ".$response->status()."\n--------------[Output]--------------\n".strip_tags(substr($response->getContent(), strpos($response->getContent(), '<body'))), 1);
 		}
 		return json_decode($response->getContent());
-    }    
+    }
 
     // -----------------------------------------------
     //  Tests
@@ -70,7 +70,7 @@ class apiTest extends abstractTest
 		}, $result);
 
 		$this->assertContains('Hellenic Republic', $result);
-		$this->assertContains('Repubblica Italiana', $result);
+		$this->assertContains('Italian Republic', $result);
 	}
 
 
@@ -81,7 +81,7 @@ class apiTest extends abstractTest
 		}, $result);
 
 		$this->assertContains('Hellenic Republic', $result);
-		$this->assertContains('Repubblica Italiana', $result);
+		$this->assertContains('Italian Republic', $result);
 	}
 
 

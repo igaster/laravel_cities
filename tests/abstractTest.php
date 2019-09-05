@@ -1,5 +1,7 @@
 <?php
 
+use Dotenv\Dotenv;
+
 abstract class abstractTest extends Orchestra\Testbench\TestCase {
 
 
@@ -7,11 +9,12 @@ abstract class abstractTest extends Orchestra\Testbench\TestCase {
     //  Global Setup (Run once)
     // -----------------------------------------------
 
-    public static function setUpBeforeClass() {
+    public static function setUpBeforeClass(): void 
+    {
         parent::setUpBeforeClass();
         
         if (file_exists(__DIR__.'/../.env')) {
-            $dotenv = new Dotenv\Dotenv(__DIR__.'/../');
+            $dotenv = Dotenv::create(__DIR__.'/../');
             $dotenv->load();
         }
     }

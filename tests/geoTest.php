@@ -95,7 +95,7 @@ class geoTest extends abstractTest
 
 	//-- Test: JSON field alternames returns an Array
 	public function testAlternateNamesIsArray(){
-		$this->assertInternalType('array', Geo::findName('Nomos Kerkyras')->alternames);
+		$this->assertIsArray(Geo::findName('Nomos Kerkyras')->alternames);
 	}
 
 	//-- Test: searchNames($string)
@@ -219,7 +219,7 @@ class geoTest extends abstractTest
 
 		$this->assertEquals([
 			0 => 'Hellenic Republic',
-			1 => 'Repubblica Italiana',
+			1 => 'Italian Republic',
 			2 => 'United States',
 		],$result);
 	}	
