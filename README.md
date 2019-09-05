@@ -1,5 +1,5 @@
-[![Laravel](https://img.shields.io/badge/Laravel-5.x-orange.svg)](http://laravel.com)
-[![License](http://img.shields.io/badge/license-MIT-brightgreen.svg)](https://tldrlegal.com/license/mit-license)
+[![License](http://img.shields.io/badge/license-MIT-orange.svg)](https://tldrlegal.com/license/mit-license)
+[![Downloads](https://img.shields.io/packagist/dt/igaster/laravel_cities.svg?style=flat-square)](https://packagist.org/packages/igaster/laravel_cities)
 
 # Introduction
 
