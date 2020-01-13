@@ -12,6 +12,10 @@ class Geo extends EloquentTreeItem
 
     const LEVEL_COUNTRY = 'PCLI';
     const LEVEL_CAPITAL = 'PPLC';
+
+    const LEVEL_PPL = 'PPL';
+    // a populated city, town, village, or other agglomeration of buildings where people live and work
+
     const LEVEL_1 = 'ADM1';
     const LEVEL_2 = 'ADM2';
     const LEVEL_3 = 'ADM3';

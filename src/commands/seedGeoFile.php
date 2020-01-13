@@ -13,11 +13,17 @@ use Symfony\Component\Console\Helper\ProgressBar;
 
 class seedGeoFile extends Command
 {
-    protected $signature = 'geo:seed {country?} {--append}';
+    protected $signature = 'geo:seed {country?} {--append} {--chunk=1000}';
     protected $description = 'Load + Parse + Save to DB a geodata file.';
 
     private $pdo;
     private $driver;
+
+    private $geoItems;
+
+    private $batch = 0;
+
+    private $chunkSize = 1000;
 
     public function __construct()
     {
@@ -31,6 +37,8 @@ class seedGeoFile extends Command
         if (! Schema::hasTable('geo')) {
             return;
         }
+
+        $this->geoItems = new geoCollection();
     }
 
     public function sql($sql)
@@ -82,7 +90,7 @@ class seedGeoFile extends Command
 
         $modifiedColumns = [];
 
-        foreach($columns as $column) {
+        foreach ($columns as $column) {
             $modifiedColumns[] = $delimeter . $column . (($onlyPrefix) ? '' : $delimeter);
         }
         
@@ -91,7 +99,6 @@ class seedGeoFile extends Command
 
     public function getDBStatement() : array
     {
-
         $sql = "INSERT INTO {$this->getFullyQualifiedTableName()} ( {$this->getColumnsAsStringDelimated()} ) VALUES ( {$this->getColumnsAsStringDelimated(':', true)} )";
         
         if ($this->driver == 'mysql') {
@@ -101,7 +108,7 @@ class seedGeoFile extends Command
         return [$this->pdo->prepare($sql), $sql];
     }
 
-    public function readFile(string $fileName)
+    public function readFile(string $fileName, string $country = null)
     {
         $this->info("Reading File '$fileName'");
         $filesize = filesize($fileName);
@@ -132,7 +139,7 @@ class seedGeoFile extends Command
                 case 'ADM3':   // 8 sec
                 case 'PPLA':   // областные центры
                 case 'PPLA2':  // Корсунь
-                    //case 'PPL':    // Яблунівка
+                case 'PPL':    // a city, town, village, or other agglomeration of buildings where people live and work
                     // 185 sec
                     $this->geoItems->add(new geoItem($line, $this->geoItems));
                     $count++;
@@ -140,6 +147,10 @@ class seedGeoFile extends Command
             }
             $progress = ftell($handle) / $filesize * 100;
             $progressBar->setProgress($progress);
+
+            if (count($this->geoItems->items) >= $this->chunkSize) {
+                $this->processItems($country);
+            }
         }
 
         $progressBar->finish();
@@ -147,26 +158,37 @@ class seedGeoFile extends Command
         $this->info(" Finished Reading File. $count items loaded</info>");
     }
 
+    public function processItems($country)
+    {
+        // Read hierarchy
+        $this->readHierarcy($country);
+
+        // Build Tree
+        $this->buildTree();
+
+        // write to persistent storage
+        $this->writeToDb();
+
+        //reset the chunk
+        $this->geoItems->reset();
+
+        $this->info(PHP_EOL . 'Processed Batch ' . $this->batch);
+        $this->batch++;
+    }
+
     public function handle()
     {
-        $this->geoItems = new geoCollection();
-
         $start = microtime(true);
         $country = strtoupper($this->argument('country'));
         $sourceName = $country ? $country : 'allCountries';
         $fileName = storage_path("geo/{$sourceName}.txt");
         $isAppend = $this->option('append');
 
-        $this->info("Start seeding for $country");
+        $this->chunkSize = $this->option('chunk');
 
-        // Read Raw file
-        $this->readFile($fileName);
+        $this->info("Start seeding for $sourceName");
 
-        // Read hierarchy
-        $this->readHierarcy($country);
-
-        // Build Tree
-        $this->buildTree();
+        DB::beginTransaction();
 
         // Clear Table
         if (! $isAppend) {
@@ -174,12 +196,24 @@ class seedGeoFile extends Command
             DB::table('geo')->truncate();
         }
 
-        // Store Tree in DB
-        $this->writeToDb();
+        // Read Raw file
+        $this->readFile($fileName, $country);
 
+        // Read hierarchy
+        //$this->readHierarcy($country);
+
+        // Build Tree
+        //$this->buildTree();
+
+        // Store Tree in DB
+        //$this->writeToDb();
+        
         //Lets get back FOREIGN_KEY_CHECKS to laravel
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+
         $this->info(PHP_EOL . ' Relation checks enabled');
+
+        DB::commit();
 
         $this->info(' Done</info>');
         $time_elapsed_secs = microtime(true) - $start;
@@ -233,14 +267,14 @@ class seedGeoFile extends Command
                 }
 
                 $count++;
-                $this->info("+ Building Tree for Country: {$item->data[2]} #{$item->data[0]}");
+                $this->info(PHP_EOL . "+ Building Tree for Country: {$item->data[2]} #{$item->data[0]}");
 
                 $maxBoundary = $this->buildDbTree($item, $maxBoundary, 0);
                 // $this->printTree($item,$output);
             }
         }
 
-        $this->info("Finished: {$count} Countries imported.  $countOrphan orphan items skiped</info>");
+        $this->info(PHP_EOL . "Finished: {$count} Countries imported.  $countOrphan orphan items skiped</info>");
     }
 
     public function writeToDb()
