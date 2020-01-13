@@ -11,7 +11,17 @@
         }
     ],	
     "require": {
-        "illuminate/contracts": "~5.1 || ^6.0"
+        "illuminate/contracts": "~5.5 || ^6.0"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "3.2-dev"
+        },
+        "laravel": {
+            "providers": [
+                "Igaster\\LaravelCities\\GeoServiceProvider"
+            ]
+        }
     },
     "require-dev": {
         "orchestra/testbench": "^4.0",
