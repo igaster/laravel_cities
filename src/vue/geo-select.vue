@@ -1,4 +1,4 @@
-<!-- 
+<!--
 
 Creates the following inputs that will be submited:
 
@@ -9,169 +9,216 @@ Creates the following inputs that will be submited:
 	- geo-country
 	- geo-country-code
 
-Example Usage
+Example Usage:
 
 	<form action="/submit/url" method="POST">
 		<geo-select
-			prefix = "my-prefix"
-			api-root-url = "\xxx\yyy"
-			:enable-breadcrumb = "true"
-			:countries = "[390903,3175395]"
-		></geo-select>
+		    v-model="model.geo_id"
+		    @input="onSelectGeoYourMethod"
+		    @apply="onLoadGeoDataByInitialIdOrChange"
+		    ref="geoSelect"
+			prefix="my-prefix"
+			api-root-url="/api/geo"
+			:enable-breadcrumb="true"
+			:hide-empty="false"
+			:countries="[390903,3175395]"
+			:filterIds="[1,2,3]" />
 		<input type="submit">
 	</form>
 
+	// OR
+
+	<geo-select v-model="user.geo_id" :filterIds="[2921044, 2822542]" @input="yourGeoValidation()"
+			:enable-labels="true" :enable-breadcrumb="false" :hide-empty="false">
+	</geo-select>
+
+	@see Example: https://i.imgur.com/O5ZlKEI.png
 -->
 
 <template>
-    <div>
-
-		<div v-if="location() !== null">
-    		<input type="hidden" :name="prefix+'-id'" :value="location().id">
-    		<input type="hidden" :name="prefix+'-name'" :value="location().name">
-    		<input type="hidden" :name="prefix+'-long'" :value="location().long">
-    		<input type="hidden" :name="prefix+'-lat'" :value="location().lat">
-    		<input type="hidden" :name="prefix+'-country'" :value="country().name">
-    		<input type="hidden" :name="prefix+'-country-code'" :value="location().country">
+	<div>
+		<div v-if="selectedLocation">
+			<input type="hidden" :name="prefix+'-id'" v-model="value">
+			<input type="hidden" :name="prefix+'-name'" :value="selectedLocation.name">
+			<input type="hidden" :name="prefix+'-long'" :value="selectedLocation.long">
+			<input type="hidden" :name="prefix+'-lat'" :value="selectedLocation.lat">
+			<input type="hidden" :name="prefix+'-timezone'" :value="selectedLocation.timezone">
+			<input type="hidden" :name="prefix+'-country-code'" :value="selectedLocation.country">
 		</div>
 
-		<div v-show="breadCrumb" class='geo-breadcrumb'>
-			<div class="form-group">
-				<label>Your Location:</label><br>
-				<span class="geo-breadcrumb-item" v-for="item in path">{{item.name}}</span>				
-				<a class="btn btn-xs btn-default pull-right" href="#" @click="breadCrumb = false">Change Location...</a>
-				<div class="clearfix"></div>
+		<div>
+			<div v-if="breadCrumb" class='geo-breadcrumb'>
+				<div class="form-group">
+					<label>Your Location:</label><br>
+					<span class="geo-breadcrumb-item" v-for="item in path">{{item.name}}</span>
+					<a class="btn btn-xs btn-default pull-right" href="#" @click="breadCrumb=false">Change Location...</a>
+					<div class="clearfix"></div>
+				</div>
+			</div>
+			<div v-else>
+				<transition-group name="smoothing" tag="div">
+					<div v-for="(locations, level) in geo" class="form-group row" :key="'level-'+level">
+						<label class="col-sm-12 col-md-3 col-form-label" v-if="enableLabels">
+							{{ ['Country', 'State/Province', 'City'][level] }}
+						</label>
+						<p v-if="loadingIndex"><i class="fa fa-cog fa-spin"></i> Loading...</p>
+						<div class="col-sm-12 col-md-9">
+                            <div class="select-wrapper"></div>
+							<select v-if="!hideEmpty || locations.length" class="form-control"
+									v-model="selectedByLevel[level]" @change="updateSelected(level)" placeholder="Test">
+								<option :value="null" disabled>Select {{ ['country', 'state/province', 'city'][level] }}</option>
+								<option v-for="item in locations" :value="item">{{item.name}}</option>
+							</select>
+						</div>
+					</div>
+				</transition-group>
 			</div>
 		</div>
-
-		<div v-show="!breadCrumb">
-			<div class="form-group">
-				<label>Select your Location: </label>
-				<p v-if="loadingIndex == 0"><i class="fa fa-cog fa-spin"></i> Loading Countries...</p>
-				<select v-else class="form-control _select2" v-model="values[0]" @change="itemSelected(0)">
-				  <option v-for="item in items[0]" :value="item.id">{{item.name}}</option>
-				</select>
-			</div>    
-
-			<div v-for="i in count" class="form-group">
-				<p v-if="loadingIndex == i"><i class="fa fa-cog fa-spin"></i> Loading...</p>
-				<div v-else>
-					<select v-if="hasItems(i)" class="form-control _select2" v-model="values[i]"  @change="itemSelected(i)">
-					  <option v-for="item in items[i]" :value="item.id">{{item.name}}</option>
-					</select>
-					<div v-if="!hasItems(i) && enableBreadcrumb">
-						<a class="btn btn-xs btn-default pull-right" href="#" @click="breadCrumb = true">Confirm Location</a>
-						<div class="clearfix"></div>
-					</div>
-				</div>
-			</div> 
-		</div>
-
-    </div>
+	</div>
 </template>
 
 <script>
-    export default {
-    	props: {
+    import axios from 'axios'
 
-			apiRootUrl: {
-				default: '/api',
+    export default {
+        name: 'geo-select',
+        props: {
+            apiRootUrl: {
+                default: '/api/geo',
+            },
+            prefix: {
+                default: 'geo',
+            },
+            enableBreadcrumb: {
+                default: true,
+            },
+            filterIds: Array,
+            value: null,
+			enableLabels: {
+                default: false
 			},
-			prefix: {
-				default: 'geo',
-			},
-			countries: {
-				default: null,
-			},
-			enableBreadcrumb: {
-				default: true,
+            hideEmpty: {
+                default: true
 			}
-    	},
-        data(){
+        },
+        data() {
             return {
-            	count: 0,
-                items: [],
-                values: [],
-                path: [],
+                geoId: this.value,
+                geo: [], // All locations by level
+                selectedByLevel: [],
+                selectedLocation: null,
                 loadingIndex: null,
                 breadCrumb: false,
             };
         },
-		created: function () {
-			this.getChildrenOf(null,0);
-		},
+        watch: {
+            value: function (newValue, oldValue) {
+                if (!oldValue || !newValue) { this.renderLocationsByGeoId(newValue); }
+            }
+        },
+        created: function() {
+            window.geo = this;
+
+            if (this.geoId) {
+                this.renderLocationsByGeoId(this.geoId);
+            } else {
+                this.renderCountries();
+			}
+        },
         methods: {
-			itemSelected(index) {
-				var that = this;
-				if(this.values[index]>0){
-					this.path[index]=this.items[index].find(function(item){
-						return item.id == that.values[index];
-					});
-					this.setIndex(index);
-					this.getChildrenOf(this.values[index], index+1);
-				}
-			},
-			setIndex(index){
-				this.count = index+1;
-				this.values.splice(index+1,10);
-				this.path.splice(index+1,10);
-			},
-			hasItems(index){
-				return (this.items[index] instanceof Array) && (this.items[index].length > 0);
-			},
-			location(){
-				if (this.path.length==0)
-					return null;
+            renderCountries() {
+                let self = this;
+                let url = this.apiUrl('countries');
 
-				return this.path[this.path.length-1];
-			},
-			country(){
-				return this.path[0];
-			},
-			getChildrenOf: function(id, index){
-				this.loadingIndex = index;
+                axios.get(url).then(function(response) {
+                    self.resetSelects(0);
+                    self.geo[0] = response.data;
+                    self.selectedByLevel[0] = null;
+                    self.supplement();
+                    self.$forceUpdate();
+                });
+            },
+            renderLocationsByGeoId: function(geoId) {
+                let self = this;
+                let url = this.apiUrl('ancestors/' + geoId);
 
-				var url = this.apiRootUrl;
-				if(id==null){
-					if(this.countries==null)
-						url+='/geo/countries?fields=id,name'
-					else
-						url+='/geo/items/'+this.countries;
-				}
-				else
-					url+='/geo/children/'+id;
+                axios.get(url).then(function(response) {
+                    response.data.forEach(function(locations, level) {
+                        locations = self.applyFilter(locations);
+                        self.geo[level] = locations;
+                        self.selectedByLevel[level] = null;
 
-				axios.get(url, {
-				}).then(response => {
-					this.items[index] = response.data;
-					this.breadCrumb = this.enableBreadcrumb && !this.hasItems(index);
-					this.loadingIndex = null;
-					this.$forceUpdate();
-					if(this.items[index].length==1){
-						this.values[index] = this.items[index][0].id;
-						this.itemSelected(index);
+                        locations.forEach(function(location, i) {
+							if (location.isSelected) {
+                                self.selectedByLevel[level] = location;
+                                self.selectedLocation = self.selectedByLevel[level];
+							}
+                        });
+                    });
+
+                    self.supplement();
+                    self.$forceUpdate();
+
+                    self.$emit('apply', self.selectedLocation.id, self.selectedLocation);
+                });
+            },
+			supplement() {
+                if (this.hideEmpty) return;
+
+				for (let i = 0; i < 3; i++) {
+                    if (!this.geo[i]) {
+                        this.geo[i] = [];
+                        this.selectedByLevel[i] = null;
 					}
-				})
-				.catch(error => {
-					alert('Error');
-					console.log(error.response.data);
-				});
+				}
 			},
+			resetSelects(level) {
+                this.geo = this.geo.splice(0, level+1);
+                this.selectedByLevel = this.selectedByLevel.splice(0, level+1);
+			},
+			applyFilter(locations) {
+                let self = this;
+
+                if (!self.filterIds || !self.filterIds.length) {
+                    return locations;
+				}
+
+                let filteredLocations = locations.filter(function (geo) {
+                    return self.filterIds.includes(geo.id); //geo.id.match(/Foo/)
+                });
+
+                return filteredLocations;
+			},
+            apiUrl(path) {
+                return this.apiRootUrl + '/' + path;
+            },
+            updateSelected(level) {
+                this.resetSelects(level);
+
+                let selectedLocation = this.getSelectedByLevel(level);
+                this.$emit('input', selectedLocation.id, selectedLocation); // @note Update v-model!
+                this.renderLocationsByGeoId(selectedLocation.id);
+			},
+			getSelectedByLevel(level) {
+                return this.selectedByLevel[level];
+			}
         }
     }
 </script>
 
 <style lang="scss">
-.geo-breadcrumb{
-    list-style: none;
-    .geo-breadcrumb-item {
-    	display: inline;
-		&+span:before {
-		    padding: 8px;
-		    color: black;
-			font-family: FontAwesome;
-			content: "\f0da";
+	.smoothing-leave-active { transition: height 1s; }
+
+	.geo-breadcrumb{
+		list-style: none;
+		.geo-breadcrumb-item {
+			display: inline;
+			&+span:before {
+				padding: 8px;
+				color: black;
+				font-family: FontAwesome;
+				content: "»";
+			}
 		}
-    }
-}
+	}
 </style>
