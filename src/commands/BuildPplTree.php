@@ -4,6 +4,7 @@ namespace Igaster\LaravelCities\commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 
 class BuildPplTree extends Command
 {
@@ -43,7 +44,7 @@ class BuildPplTree extends Command
 
     private function determinePplParentId($country)
     {
-        $geos = \DB::table('geo')
+        $geos = DB::table('geo')
             ->select(['id', 'name', 'country', 'a1code', 'level'])
             ->where('country', $country)
             ->whereRaw('parent_id IS NULL')
@@ -60,7 +61,7 @@ class BuildPplTree extends Command
                 continue;
             }
 
-            \DB::table('geo')->where('id', $geo->id)->update(['parent_id' => $parentId]);
+            DB::table('geo')->where('id', $geo->id)->update(['parent_id' => $parentId]);
         }
     }
 

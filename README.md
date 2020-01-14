@@ -57,6 +57,13 @@ artisan migrate
 artisan geo:seed
 ```
 
+You can also pass `--chunk` argument to specify how much chunk you want to process at once suppose you want `3000` records to be processed at once you can pass.
+This gives flexibility to make the import with low memory footprints
+```
+artisan geo:seed --chunk=3000
+```
+by default it is `1000`
+
 Note: If you don't want all the countries, you can download only country specific files (eg US.txt) and import each one of them with:
 
 ```

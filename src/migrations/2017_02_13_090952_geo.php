@@ -40,6 +40,6 @@ class Geo extends Migration
      */
     public function down()
     {
-        Schema::drop('geo');
+        Schema::dropIfExists('geo');
     }
 }
