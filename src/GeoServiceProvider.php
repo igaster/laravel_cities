@@ -8,9 +8,6 @@ class GeoServiceProvider extends ServiceProvider
 {
     public function boot()
     {
-        // Load migrations
-        $this->loadMigrationsFrom(__DIR__ . '/migrations');
-
         // Load Routes
         // $this->loadRoutesFrom(__DIR__.'/routes.php');
 
@@ -20,6 +17,10 @@ class GeoServiceProvider extends ServiceProvider
 
         // Register Commands
         if ($this->app->runningInConsole()) {
+            
+            // Load migrations
+            $this->loadMigrationsFrom(__DIR__ . '/migrations');
+            
             $this->commands([
                 \Igaster\LaravelCities\commands\seedGeoFile::class,
                 \Igaster\LaravelCities\commands\seedJsonFile::class,
