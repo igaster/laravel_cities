@@ -35,4 +35,10 @@ class geoCollection
         }
         return false;
     }
+    
+    public function reset()
+    {
+        $this->items = [];
+        return $this;
+    }
 }
