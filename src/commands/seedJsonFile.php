@@ -18,16 +18,17 @@ class seedJsonFile extends Command
     public function __construct()
     {
         parent::__construct();
-        $this->pdo = DB::connection()->getPdo(PDO::FETCH_ASSOC);
-        if (! Schema::hasTable('geo')) {
-            return;
-        }
 
         $this->geoItems = new geoCollection();
     }
 
     public function handle()
     {
+        $this->pdo = DB::connection()->getPdo(PDO::FETCH_ASSOC);
+        if (! Schema::hasTable('geo')) {
+            return;
+        }
+        
         $start = microtime(true);
 
         $filename = $this->argument('file');

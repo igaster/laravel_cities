@@ -31,12 +31,6 @@ class seedGeoFile extends Command
         
         $connection = config('database.default');
         $this->driver = strtolower(config("database.connections.{$connection}.driver"));
-        
-        $this->pdo = DB::connection()->getPdo(PDO::FETCH_ASSOC);
-
-        if (! Schema::hasTable('geo')) {
-            return;
-        }
 
         $this->geoItems = new geoCollection();
     }
@@ -178,6 +172,12 @@ class seedGeoFile extends Command
 
     public function handle()
     {
+        $this->pdo = DB::connection()->getPdo(PDO::FETCH_ASSOC);
+
+        if (! Schema::hasTable('geo')) {
+            return;
+        }
+        
         $start = microtime(true);
         $country = strtoupper($this->argument('country'));
         $sourceName = $country ? $country : 'allCountries';
