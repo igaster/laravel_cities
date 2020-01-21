@@ -21,6 +21,8 @@ What you dont get:
 
 `composer require igaster/laravel_cities`
 
+this package uses autodiscover or else you can add manually 
+
 - Add Service Provider in app.php:
 
 ```php
@@ -41,12 +43,26 @@ wget http://download.geonames.org/export/dump/allCountries.zip && unzip allCount
 wget http://download.geonames.org/export/dump/hierarchy.zip && unzip hierarchy.zip && rm hierarchy.zip
 ```
 
+or otherwise you can use 
+```
+artisan geo:download
+```
+
+Download a *.txt files from geonames.org By default it will download allcountries and hierarchy files otherwise you can pass flag --countries for specific countries
+
 - Migrate and Seed. Run:
 
 ```
 artisan migrate
 artisan geo:seed
 ```
+
+You can also pass `--chunk` argument to specify how much chunk you want to process at once suppose you want `3000` records to be processed at once you can pass.
+This gives flexibility to make the import with low memory footprints
+```
+artisan geo:seed --chunk=3000
+```
+by default it is `1000`
 
 Note: If you don't want all the countries, you can download only country specific files (eg US.txt) and import each one of them with:
 
