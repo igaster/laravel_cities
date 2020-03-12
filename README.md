@@ -57,6 +57,12 @@ artisan migrate
 artisan geo:seed
 ```
 
+you can increase the memory limit for the cli invocation on demand to have process the command at once
+```
+php -d memory_limit=8000M artisan geo:seed --chunk=100000
+```
+So this will increase the memory limit for the command to 8GB with large chunk for each batches
+
 You can also pass `--chunk` argument to specify how much chunk you want to process at once suppose you want `3000` records to be processed at once you can pass.
 This gives flexibility to make the import with low memory footprints
 ```
