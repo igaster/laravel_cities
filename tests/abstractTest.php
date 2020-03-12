@@ -1,8 +1,11 @@
 <?php
 
-use Dotenv\Dotenv;
+namespace Igaster\LaravelCities\Tests;
 
-abstract class abstractTest extends Orchestra\Testbench\TestCase {
+use Dotenv\Dotenv;
+use Igaster\LaravelCities\GeoServiceProvider;
+
+abstract class abstractTest extends \Orchestra\Testbench\TestCase {
 
 
     // -----------------------------------------------
@@ -14,7 +17,7 @@ abstract class abstractTest extends Orchestra\Testbench\TestCase {
         parent::setUpBeforeClass();
         
         if (file_exists(__DIR__.'/../.env')) {
-            $dotenv = Dotenv::create(__DIR__.'/../');
+            $dotenv = Dotenv::createMutable(__DIR__.'/../');
             $dotenv->load();
         }
     }
@@ -51,6 +54,7 @@ abstract class abstractTest extends Orchestra\Testbench\TestCase {
 
     protected function getPackageProviders($app) {
         return [
+            GeoServiceProvider::class
             // Intervention\Image\ImageServiceProvider::class,
         ];
     }

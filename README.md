@@ -21,9 +21,7 @@ What you dont get:
 
 `composer require igaster/laravel_cities`
 
-this package uses autodiscover or else you can add manually 
-
-- Add Service Provider in app.php:
+The Service provider will be autodiscovered and registered by Laravel. If you are using Laravel version <5.5 then you  must manually add the Service Provider in app.php:
 
 ```php
 'providers' => [
@@ -37,8 +35,7 @@ this package uses autodiscover or else you can add manually
 [Tip] Quick script to download on your remote server with:
 
 ```
-mkdir storage/geo
-cd storage/geo
+mkdir -p storage/geo && cd storage/geo
 wget http://download.geonames.org/export/dump/allCountries.zip && unzip allCountries.zip && rm allCountries.zip
 wget http://download.geonames.org/export/dump/hierarchy.zip && unzip hierarchy.zip && rm hierarchy.zip
 ```

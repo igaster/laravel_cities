@@ -11,7 +11,17 @@
         }
     ],	
     "require": {
-        "illuminate/contracts": "~5.5 || ^6.0"
+        "laravel/framework": "5.*|^6.0|^7.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^4.0|^5.0",
+        "phpunit/phpunit": "^8.0"
+    },
+    "autoload": {
+        "psr-4" : {
+            "Igaster\\LaravelCities\\"          : "src/",
+            "Igaster\\LaravelCities\\Tests\\"   : "tests/"
+        }
     },
     "extra": {
         "branch-alias": {
@@ -23,19 +33,6 @@
             ]
         }
     },
-    "require-dev": {
-        "orchestra/testbench": "^4.0",
-        "facade/ignition": "^1.4",
-        "fzaninotto/faker": "^1.4",
-        "mockery/mockery": "^1.0",
-        "nunomaduro/collision": "^3.0",
-        "phpunit/phpunit": "^8.0"
-    },     
-    "autoload": {
-        "psr-4" : {
-            "Igaster\\LaravelCities\\"          : "src/",
-            "Igaster\\LaravelCities\\Tests\\"   : "tests/"            
-        }
-    },
+
     "minimum-stability": "stable"
 }
