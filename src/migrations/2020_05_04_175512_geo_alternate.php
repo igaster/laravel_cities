@@ -24,6 +24,8 @@ class Geoalternate extends Migration
             $table->boolean('isHistoric')->default(false);
             $table->char('from', 20)->nullable();
             $table->char('to', 20)->nullable();
+            $table->primary('alternateNameId');
+            $table->index('geonameid');
         });
     }
 
