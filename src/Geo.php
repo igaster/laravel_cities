@@ -87,12 +87,17 @@ class Geo extends EloquentTreeItem
         });
     }
 
-    public function scopeAreDescentants($query, Geo $parent)
+    public function scopeAreDescendants($query, Geo $parent)
     {
         return $query->where(function ($query) use ($parent) {
             $query->where('left', '>', $parent->left)
                 ->where('right', '<', $parent->right);
         });
+    }
+
+    public function scopeAreDescentants($query, Geo $parent)
+    {
+        return $this->scopeAreDescendants($query, $parent);
     }
 
     public static function scopeAlternatenames($query) {
@@ -133,7 +138,7 @@ class Geo extends EloquentTreeItem
         $query = self::search($name)->orderBy('name', 'ASC');
 
         if ($parent) {
-            $query->areDescentants($parent);
+            $query->areDescendants($parent);
         }
 
         return $query->get();

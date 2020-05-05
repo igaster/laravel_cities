@@ -142,7 +142,7 @@ Geo::getByIds([390903,3175395]);   // Get a Collection of items by Ids
 $children    = $geo->getChildren();    // Get direct Children of $geo (Collection)
 $parent      = $geo->getParent();      // Get single Parent of $geo (Geo)
 $ancestors  = $geo->getAncestors();   // Get Ancestors tree of $geo from top->bottom (Collection)
-$descendants = $geo->getDescendants(); // Get all Descentants of $geo alphabetic (Collection)
+$descendants = $geo->getDescendants(); // Get all Descendants of $geo alphabetic (Collection)
 ```
 
 
@@ -151,7 +151,7 @@ $descendants = $geo->getDescendants(); // Get all Descentants of $geo alphabetic
 $geo1->isParentOf($geo2);       // (Bool) Check if $geo2 is direct Parent of $geo1
 $geo2->isChildOf($geo1);        // (Bool) Check if $geo2 is direct Child of $geo1
 $geo1->isAncestorOf($geo2);    // (Bool) Check if $geo2 is Ancestor of $geo1
-$geo2->isDescendantOf($geo1);   // (Bool) Check if $geo2 is Descentant of $geo1
+$geo2->isDescendantOf($geo1);   // (Bool) Check if $geo2 is Descendant of $geo1
 ```
 
 ## Query scopes (Use them to Build custom queries)
@@ -161,7 +161,7 @@ Geo::level($level);     // Filter by Administration level:
 Geo::country('US');     // (Shortcut) Items that belongs to country US 
 Geo::capital();         // (Shortcut) Items that are capitals
 Geo::search($name);     // Items that conain $name in name OR alternames (Case InSensitive)
-Geo::areDescentants($geo);   // Items that belong to $geo
+Geo::areDescendants($geo);   // Items that belong to $geo
 
 $geo->ancestors();     // Items that contain $geo
 $geo->descendants();    // Items that belong to $geo

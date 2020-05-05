@@ -62,7 +62,7 @@ class geoTest extends abstractTest
     }
 
     //-- Test: isAncestorOf() isDescendantOf()
-    public function testRelationAncestorDescentant()
+    public function testRelationAncestorDescendant()
     {
         $geo1 = Geo::findName('Ionian Islands');
         $geo2 = Geo::findName('Nomos Kerkyras');
