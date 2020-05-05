@@ -11,7 +11,7 @@ use Symfony\Component\Console\Helper\ProgressBar;
 
 class seedAlternateNames extends Command
 {
-    protected $signature = 'geo:alternate {--chunk=1000} {--append}}';
+    protected $signature = 'geo:alternate {--chunk=1000} {--insertSize=1000} {--append}}';
     protected $description = 'Load + Parse + Save to DB a geodata alternate names file.';
 
     private $pdo;
@@ -22,6 +22,23 @@ class seedAlternateNames extends Command
     private $batch = 0;
 
     private $chunkSize = 1000;
+
+    private $insertSize = 1000;
+
+    private $columns = [
+        'alternateNameId',
+        'geonameid',
+        'isolanguage',
+        'alternatename',
+        'isPreferredName',
+        'isShortName', 
+        'isColloquial',
+        'isHistoric',
+        'from',
+        'to'
+    ];	
+
+    const TABLENAME = "geoalternate";
 
     public function __construct()
     {
@@ -50,39 +67,32 @@ class seedAlternateNames extends Command
      */
     public function getFullyQualifiedTableName() : string
     {
-        return DB::getTablePrefix() . 'geoalternate';
+        return DB::getTablePrefix() . self::TABLENAME;
     }
 
     protected function getColumnsAsStringDelimated($delimeter = '"', bool $onlyPrefix = false)
     {
-        $columns = [
-            'alternateNameId',
-            'geonameid',
-            'isolanguage',
-            'alternatename',
-            'isPreferredName',
-            'isShortName', 
-            'isColloquial',
-            'isHistoric',
-            'from',
-            'to'
-        ];	
-
         $modifiedColumns = [];
 
-        foreach ($columns as $column) {
+        foreach ($this->columns as $column) {
             $modifiedColumns[] = $delimeter . $column . (($onlyPrefix) ? '' : $delimeter);
         }
         
         return implode(',', $modifiedColumns);
     }
 
-    public function getDBStatement() : array
+    public function getDBStatement($totalItems) : array
     {
-        $sql = "INSERT INTO {$this->getFullyQualifiedTableName()} ( {$this->getColumnsAsStringDelimated()} ) VALUES ( {$this->getColumnsAsStringDelimated(':', true)} )";
-        
+        $strItem = "(" . implode(',', array_fill(0, count($this->columns), '?')) . ")";
+        $totalItems = implode(',', array_fill(0, $totalItems, $strItem));
+       
         if ($this->driver == 'mysql') {
-            $sql = "INSERT INTO {$this->getFullyQualifiedTableName()} ( {$this->getColumnsAsStringDelimated('`')} ) VALUES ( {$this->getColumnsAsStringDelimated(':', true)} )";
+            $sql = "INSERT INTO {$this->getFullyQualifiedTableName()} ( {$this->getColumnsAsStringDelimated('`')} ) VALUES " .
+                $totalItems;
+        }
+        else {
+            $sql = "INSERT INTO {$this->getFullyQualifiedTableName()} ( {$this->getColumnsAsStringDelimated()} ) VALUES " .
+                $totalItems;
         }
 
         return [$this->pdo->prepare($sql), $sql];
@@ -104,7 +114,7 @@ class seedAlternateNames extends Command
             }
 
             // Convert TAB sepereted line to array
-            $data = explode("\t", $line);
+            $data = explode("\t", rtrim($line, "\r\n"));
 
             // Check for errors
             if (count($data) !== 10) {
@@ -148,19 +158,20 @@ class seedAlternateNames extends Command
         }
         
         $start = microtime(true);
-        $fileName = storage_path("geo/alternateNamesV2.txt");
+        $fileName = storage_path("geo/alternateNamesV2.crop.txt"); // TODO debug
         $isAppend = $this->option('append');
 
         $this->chunkSize = $this->option('chunk');
+        $this->insertSize = $this->option('insertSize');
 
-        $this->info("Start seeding for alternateNamesV2");
+        $this->info("Start seeding for alternateNamesV2  " . $this->insertSize);
 
         DB::beginTransaction();
 
         // Clear Table
         if (!$isAppend) {
             $this->info("Truncating '{$this->getFullyQualifiedTableName()}' table...");
-            DB::table('geo')->truncate();
+            DB::table(self::TABLENAME)->truncate();
         }
 
         // Read Raw file
@@ -184,38 +195,53 @@ class seedAlternateNames extends Command
     public function writeToDb()
     {
         // Store Tree in DB
-        $this->info('Writing in Database</info>');
+        // $this->info('Writing in Database');
         
-        [$stmt, $sql] = $this->getDBStatement();
+        [$stmt, $sql] = $this->getDBStatement($this->insertSize);
 
         $count = 0;
+
         $totalCount = count($this->alternateItems);
 
-        $progressBar = new ProgressBar($this->output, 100);
+        // $progressBar = new ProgressBar($this->output, 100);
 
+        $batch = [];
+
+        $totalToCommit = $this->insertSize * count($this->columns);
+        
         foreach ($this->alternateItems as $item) {
-            $params = [
-                'alternateNameId' => $item[0],
-                'geonameid' => $item[1],
-                'isolanguage' => $item[2],
-                'alternatename' => $item[3],
-                'isPreferredName' => (int)$item[4],
-                'isShortName' => (int)$item[5],
-                'isColloquial' => (int)$item[6],
-                'isHistoric' => (int)$item[7],
-                'from' => $item[8] ? $item[8] : null,
-                'to' => $item[9] ? $item[9] : null
-            ];
+            array_push($batch,
+                $item[0],
+                $item[1],
+                $item[2],
+                $item[3],
+                (int)$item[4],
+                (int)$item[5],
+                (int)$item[6],
+                (int)$item[7],
+                $item[8] ? $item[8] : null,
+                $item[9] ? $item[9] : null
+            );
 
-            if ($stmt->execute($params) === false) {
-                $error = "Error in SQL : '$sql'\n" . PDO::errorInfo() . "\nParams: \n$params";
-                throw new Exception($error, 1);
+            if (count($batch) >= $totalToCommit) {
+                if ($stmt->execute($batch) === false) {
+                    $error = "Error in SQL : '$sql'\n" . print_r($stmt->errorInfo(), true) . "\n";
+                    throw new Exception($error, 1);
+                }
+                $batch = [];
             }
 
             $progress = $count++ / $totalCount * 100;
-            $progressBar->setProgress($progress);
+            // $progressBar->setProgress($progress);
         }
 
-        $progressBar->finish();
+        if (count($batch)) {
+            [$stmt, $sql] = $this->getDBStatement(count($batch)/count($this->columns));
+            if ($stmt->execute($batch) === false) {
+                $error = "Error in SQL : '$sql'\n" . print_r($stmt->errorInfo(), true) . "\n";
+                throw new Exception($error, 1);
+            }
+        }
+        // $progressBar->finish();
     }
 }
