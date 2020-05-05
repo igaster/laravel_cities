@@ -205,7 +205,7 @@ class Geo extends EloquentTreeItem
     // get Parent (Geo)
     public function getParent()
     {
-        return self::ancestors()->where('depth', $this->depth - 1)->first();
+        return self::find($this->parent_id);
     }
 
     // get all Ancnstors (Collection) ordered by level (Country -> City)
