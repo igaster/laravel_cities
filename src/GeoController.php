@@ -2,6 +2,7 @@
 
 namespace Igaster\LaravelCities;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Response;
@@ -52,7 +53,8 @@ class GeoController extends Controller
     // [Collection] Get all countries
     public function countries()
     {
-        return $this->applyFilter(Geo::level(Geo::LEVEL_COUNTRY)->get());
+        $countries = $this->applyWith(Geo::level(Geo::LEVEL_COUNTRY));
+        return $this->applyFilter($countries->get());
     }
 
     // [Collection] Search for %$name% in 'name' and 'alternames'. Optional filter to children of $parent_id
@@ -111,11 +113,32 @@ class GeoController extends Controller
         return $ancestors;
     }
 
+    protected function applyWith($selector) {
+        $request = request();
+        if ($request->has('geoalternate')) {
+            $selector->with([
+                'geoalternate' => function($query) use ($request) {
+                    if ($request->has('isolanguage')) {
+                        $query->where('geoalternate.isolanguage', $request->input('isolanguage'));
+                    }
+                    if ($request->has('isPreferredName')) {
+                        $query->where('geoalternate.isPreferredName', 1);
+                    }
+                    if ($request->has('isShortName')) {
+                        $query->where('geoalternate.isShortName', 1);
+                    }
+                }
+            ]);
+        }
+        return $selector;
+    }
+
     // Apply Filter from request to json representation of an item or a collection
     // api/call?fields=field1,field2
     protected function applyFilter($geo)
     {
-        if (request()->has('fields')) {
+        $request = request();
+        if ($request->has('fields')) {
             if (get_class($geo) == Collection::class) {
                 foreach ($geo as $item) {
                     $this->applyFilter($item);
@@ -124,7 +147,7 @@ class GeoController extends Controller
                 return $geo;
             }
 
-            $fields = request()->input('fields');
+            $fields = $request->input('fields');
             if ($fields == 'all') {
                 $geo->fliterFields();
             } else {
@@ -134,6 +157,24 @@ class GeoController extends Controller
                 });
                 $geo->fliterFields($fields);
             }
+        }
+
+        if ($request->has('geoalternate')) {
+            if (get_class($geo) == Collection::class) {
+                return $geo;
+            }
+
+            $alternate = Geoalternate::geonameid($geo->id);
+            if ($request->has('isolanguage')) {
+                $alternate = $alternate->isoLanguage($request->input('isolanguage'));
+            }
+            if ($request->has('isPreferredName')) {
+                $alternate = $alternate->isPreferredName(1);
+            }
+            if ($request->has('isShortName')) {
+                $alternate = $alternate->isShortName(1);
+            }
+            $geo->alternate = $alternate->get();
         }
 
         return $geo;

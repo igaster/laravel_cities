@@ -25,6 +25,8 @@ class Geo extends EloquentTreeItem
     // Hide From JSON
     protected $hidden = ['alternames', 'left', 'right', 'depth'];
 
+    protected $alternate = null;
+
     // ----------------------------------------------
     //  Scopes
     // ----------------------------------------------
@@ -207,6 +209,16 @@ class Geo extends EloquentTreeItem
         }
 
         return $this;
+    }
+
+    public function getGeoalternateAttribute()
+    {
+        return $this->geoalternate()->get();
+    }
+
+    public function geoalternate()
+    {
+        return $this->hasMany(Geoalternate::class, 'geonameid');
     }
 
     // ----------------------------------------------
