@@ -228,7 +228,7 @@ artisan geo:download --alternate
 
 - Seed. Run:
 ```
-artisan geo:alternateseed
+artisan geo:alternate
 ```
 
 Like before, you can increase the memory limit for the cli invocation on demand to have process the command at once.
