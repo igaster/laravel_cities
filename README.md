@@ -217,6 +217,56 @@ To reduce bandwith, all Geo model attributes will be returned except from `alter
 |fields=all                         | Returns all attributes                  | api/geo/countries?fields=all    |
 
 
+# Alternate names
+
+If you need localization/internationalization you can use the alternate names table. This is not loaded by default.
+
+- Download with alternate names:
+```
+artisan geo:download --alternate
+```
+
+- Seed. Run:
+```
+artisan geo:alternateseed
+```
+
+Like before, you can increase the memory limit for the cli invocation on demand to have process the command at once.
+```
+php -d memory_limit=8000M artisan geo:alternate --chunk=100000
+```
+
+## Filters 
+
+On the HTTP API you now have a few query options:
+
+| URL Params (aplly to all routes)      | Description                            | Example                                                  |
+|---------------------------------------|----------------------------------------|----------------------------------------------------------|
+|geoalternate=true                      | Returns the alternate names            | api/geo/countries?geoalternate=true                      |
+|geoalternate=true&isolanguage=x        | Returns only English alternate names   | api/geo/countries?geoalternate=true&isolanguage=en       |
+|geoalternate=true&isPreferredName=true | Returns only preferred names           | api/geo/countries?geoalternate=true&isPreferredName=true |
+|geoalternate=true&isShortName=true     | Returns only short names               | api/geo/countries?geoalternate=true&isShortName=true     |
+
+`geoalternate` is mandatory, the other options can be combined if you want. 
+
+
+The fields available on alternate names are the following:
+
+```
+alternateNameId   : the id of this alternate name, int
+geonameid         : geonameId referring to id in table 'geoname', int
+isolanguage       : iso 639 language code 2- or 3-characters; 4-characters 'post' for postal codes and 'iata','icao' and faac for airport codes, fr_1793 for French Revolution names,  abbr for abbreviation, link to a website (mostly to wikipedia), wkdt for the wikidataid, varchar(7)
+alternate name    : alternate name or name variant, varchar(400)
+isPreferredName   : '1', if this alternate name is an official/preferred name
+isShortName       : '1', if this is a short name like 'California' for 'State of California'
+isColloquial      : '1', if this alternate name is a colloquial or slang term. Example: 'Big Apple' for 'New York'.
+isHistoric        : '1', if this alternate name is historic and was used in the past. Example 'Bombay' for 'Mumbai'.
+from		  : from period when the name was used
+to		  : to period when the name was used
+```
+
+Avoid getting all the geoalternatenames without extra filters, as it can be a lot of data.
+
 # Vue Component
 
 A [Vue component](https://github.com/igaster/laravel_cities/blob/master/vue/geo-slect.vue) is shipped with this package that plugs into the provided API and provides an interactive way to pick a location through a series of steps. Sorry, no live demo yet, just some screenshots:
@@ -283,3 +333,4 @@ The following inputs will be submited:
 	:enable-breadcrumb = "true"       <!-- Enable/Disable Breadcrumb -->
 ></geo-select>
 ```
+
