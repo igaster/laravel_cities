@@ -9,10 +9,19 @@ use Illuminate\Support\Facades\Response;
 
 class GeoController extends Controller
 {
+
+    public function __construct()
+    {
+        Geo::$geoalternateOptions = new GeoalternateOptions(request());
+    }
+
     // [Geo] Get an item by $id
     public function item($id)
     {
         $geo = Geo::find($id);
+        if (Geo::$geoalternateOptions->alternateNames) {
+            $geo->append('geoalternate');
+        }
         $this->applyFilter($geo);
         return Response::json($geo);
     }
@@ -53,7 +62,7 @@ class GeoController extends Controller
     // [Collection] Get all countries
     public function countries()
     {
-        $countries = $this->applyWith(Geo::level(Geo::LEVEL_COUNTRY));
+        $countries = Geo::level(Geo::LEVEL_COUNTRY);
         return $this->applyFilter($countries->get());
     }
 
@@ -113,18 +122,6 @@ class GeoController extends Controller
         return $ancestors;
     }
 
-    protected function applyWith($selector) {
-        $request = request();
-        if ($request->has('geoalternate')) {
-            $selector->with([
-                'geoalternate' => function($query) use ($request) {
-                    $query = Geo::filterAlternate($request, $query);
-                }
-            ]);
-        }
-        return $selector;
-    }
-
     // Apply Filter from request to json representation of an item or a collection
     // api/call?fields=field1,field2
     protected function applyFilter($geo)
@@ -149,13 +146,6 @@ class GeoController extends Controller
                 });
                 $geo->fliterFields($fields);
             }
-        }
-
-        if ($request->has('geoalternate')) {
-            if (get_class($geo) == Collection::class) {
-                return $geo;
-            }
-            $geo->append('geoalternate');
         }
 
         return $geo;

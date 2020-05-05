@@ -3,6 +3,7 @@
 namespace Igaster\LaravelCities;
 
 use Igaster\LaravelCities\dbTree\EloquentTreeItem;
+use Illuminate\Support\Facades\Request;
 
 class Geo extends EloquentTreeItem
 {
@@ -27,33 +28,35 @@ class Geo extends EloquentTreeItem
 
     protected $alternate = null;
 
+    static public $geoalternateOptions = null;
+
     // ----------------------------------------------
     //  Scopes
     // ----------------------------------------------
 
     public function scopeCountry($query, $countryCode)
     {
-        return $query->where('country', $countryCode);
+        return $query->where('country', $countryCode)->alternateNames();
     }
 
     public function scopeCapital($query)
     {
-        return $query->where('level', self::LEVEL_CAPITAL);
+        return $query->where('level', self::LEVEL_CAPITAL)->alternateNames();
     }
 
     public function scopeLevel($query, $level)
     {
-        return $query->where('level', $level);
+        return $query->where('level', $level)->alternateNames();
     }
 
     public function scopeDescendants($query)
     {
-        return $query->where('left', '>', $this->left)->where('right', '<', $this->right);
+        return $query->where('left', '>', $this->left)->where('right', '<', $this->right)->alternateNames();
     }
 
     public function scopeAncenstors($query)
     {
-        return $query->where('left', '<', $this->left)->where('right', '>', $this->right);
+        return $query->where('left', '<', $this->left)->where('right', '>', $this->right)->alternateNames();
     }
 
     public function scopeChildren($query)
@@ -62,7 +65,7 @@ class Geo extends EloquentTreeItem
             $query->where('left', '>', $this->left)
                 ->where('right', '<', $this->right)
                 ->where('depth', $this->depth + 1);
-        });
+        })->alternateNames();
     }
 
     public function scopeSearch($query, $search)
@@ -81,6 +84,17 @@ class Geo extends EloquentTreeItem
             $query->where('left', '>', $parent->left)
                 ->where('right', '<', $parent->right);
         });
+    }
+
+    public static function scopeAlternatenames($query) {
+        if (static::$geoalternateOptions->alternateNames) {
+            return $query->with([
+                'geoalternate' => function ($query) {
+                    $query = Geo::filterAlternate($query, Geo::$geoalternateOptions);
+                }
+            ]);
+        }
+        return $query;
     }
 
     public function scopeTest($query)
@@ -211,19 +225,17 @@ class Geo extends EloquentTreeItem
         return $this;
     }
 
-    static public function filterAlternate($request, $query) {
-        if (!$request) {
+    static public function filterAlternate($query, GeoalternateOptions $options) {
+        if (!$options->alternateNames) {
             return $query;
         }
-        if ($request->has('isolanguage')) {
-            $query = $query->isoLanguage(
-                explode(',', $request->input('isolanguage'))
-            );
+        if ($options->isolanguage) {
+            $query = $query->isoLanguage($options->isolanguage);
         }
-        if ($request->has('isPreferredName')) {
+        if ($options->isPreferredName) {
             $query = $query->isPreferredName(1);
         }
-        if ($request->has('isShortName')) {
+        if ($options->isShortName) {
             $query = $query->isShortName(1);
         }
         return $query;
@@ -231,7 +243,7 @@ class Geo extends EloquentTreeItem
 
     public function getGeoalternateAttribute()
     {
-        return static::filterAlternate(request(), $this->geoalternate())->get();
+        return static::filterAlternate($this->geoalternate(), static::$geoalternateOptions)->get();
     }
 
     public function geoalternate()
@@ -248,3 +260,5 @@ class Geo extends EloquentTreeItem
         require_once __DIR__ . '/routes.php';
     }
 }
+
+Geo::$geoalternateOptions = new GeoalternateOptions();
