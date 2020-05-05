@@ -158,7 +158,7 @@ class seedAlternateNames extends Command
         }
         
         $start = microtime(true);
-        $fileName = storage_path("geo/alternateNamesV2.crop.txt"); // TODO debug
+        $fileName = storage_path("geo/alternateNamesV2.txt");
         $isAppend = $this->option('append');
 
         $this->chunkSize = $this->option('chunk');
