@@ -30,6 +30,9 @@ class Geoalternate extends Eloquent
 
     public function scopeIsolanguage($query, $lang)
     {
+        if (is_array($lang)) {
+            return $query->whereIn('isolanguage', $lang);
+        }
         return $query->where('isolanguage', $lang);
     }
 

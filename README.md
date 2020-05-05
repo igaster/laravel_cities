@@ -243,12 +243,11 @@ On the HTTP API you now have a few query options:
 | URL Params (aplly to all routes)      | Description                            | Example                                                  |
 |---------------------------------------|----------------------------------------|----------------------------------------------------------|
 |geoalternate=true                      | Returns the alternate names            | api/geo/countries?geoalternate=true                      |
-|geoalternate=true&isolanguage=x        | Returns only English alternate names   | api/geo/countries?geoalternate=true&isolanguage=en       |
+|geoalternate=true&isolanguage=x        | Returns only English alternate names   | api/geo/countries?geoalternate=true&isolanguage=pt,br    |
 |geoalternate=true&isPreferredName=true | Returns only preferred names           | api/geo/countries?geoalternate=true&isPreferredName=true |
 |geoalternate=true&isShortName=true     | Returns only short names               | api/geo/countries?geoalternate=true&isShortName=true     |
 
-`geoalternate` is mandatory, the other options can be combined if you want. 
-
+`geoalternate` is mandatory, the other options can be combined if you want. `isolanguages` accepts multiple languages separated by comma.
 
 The fields available on alternate names are the following:
 

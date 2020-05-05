@@ -119,13 +119,15 @@ class GeoController extends Controller
             $selector->with([
                 'geoalternate' => function($query) use ($request) {
                     if ($request->has('isolanguage')) {
-                        $query->where('geoalternate.isolanguage', $request->input('isolanguage'));
+                        $query = $query->isoLanguage(
+                            explode(',', $request->input('isolanguage'))
+                        );
                     }
                     if ($request->has('isPreferredName')) {
-                        $query->where('geoalternate.isPreferredName', 1);
+                        $query = $query->isPreferredName(1);
                     }
                     if ($request->has('isShortName')) {
-                        $query->where('geoalternate.isShortName', 1);
+                        $query = $query->isShortName(1);
                     }
                 }
             ]);
@@ -165,16 +167,22 @@ class GeoController extends Controller
             }
 
             $alternate = Geoalternate::geonameid($geo->id);
-            if ($request->has('isolanguage')) {
-                $alternate = $alternate->isoLanguage($request->input('isolanguage'));
-            }
-            if ($request->has('isPreferredName')) {
-                $alternate = $alternate->isPreferredName(1);
-            }
-            if ($request->has('isShortName')) {
-                $alternate = $alternate->isShortName(1);
-            }
-            $geo->alternate = $alternate->get();
+            $alternate->with([
+                'geoalternate' => function($query) use ($request) {
+                    if ($request->has('isolanguage')) {
+                        $query = $query->isoLanguage(
+                            explode(',', $request->input('isolanguage'))
+                        );
+                    }
+                    if ($request->has('isPreferredName')) {
+                        $query = $query->isPreferredName(1);
+                    }
+                    if ($request->has('isShortName')) {
+                        $query = $query->isShortName(1);
+                    }
+                }
+            ]);
+            $geo->alternate = $alternate;
         }
 
         return $geo;
