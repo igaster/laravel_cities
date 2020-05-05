@@ -54,9 +54,18 @@ class Geo extends EloquentTreeItem
         return $query->where('left', '>', $this->left)->where('right', '<', $this->right)->alternateNames();
     }
 
-    public function scopeAncenstors($query)
+    public function scopeAncestors($query)
     {
         return $query->where('left', '<', $this->left)->where('right', '>', $this->right)->alternateNames();
+    }
+    
+    /**
+     * old method with a typo, kept for backwards compatibility.
+     * @deprecated
+     */
+    public function scopeAncenstors($query)
+    {
+        return $this->scopeAncestors($query);
     }
 
     public function scopeChildren($query)
@@ -167,9 +176,18 @@ class Geo extends EloquentTreeItem
     }
 
     // is Parent of $item (any depth) ?
-    public function isAncenstorOf(Geo $item)
+    public function isAncestorOf(Geo $item)
     {
         return ($this->left < $item->left) && ($this->right > $item->right);
+    }
+
+    /**
+     * old method with a typo, kept for backwards compatibility.
+     * @deprecated 
+     */
+    public function isAncenstorOf(Geo $item)
+    {
+        return $this->isAncestorOf($item);
     }
 
     // retrieve by name
@@ -187,13 +205,22 @@ class Geo extends EloquentTreeItem
     // get Parent (Geo)
     public function getParent()
     {
-        return self::ancenstors()->where('depth', $this->depth - 1)->first();
+        return self::ancestors()->where('depth', $this->depth - 1)->first();
     }
 
     // get all Ancnstors (Collection) ordered by level (Country -> City)
+    public function getAncestors()
+    {
+        return self::ancestors()->orderBy('depth')->get();
+    }
+
+    /**
+     * old method with a typo, kept for backwards compatibility.
+     * @deprecated
+     */
     public function getAncensors()
     {
-        return self::ancenstors()->orderBy('depth')->get();
+        return $this->getAncestors();
     }
 
     // get all Descendants (Collection) Alphabetical
@@ -203,7 +230,7 @@ class Geo extends EloquentTreeItem
     }
 
     // Return only $fields as Json. null = Show all
-    public function fliterFields($fields = null)
+    public function filterFields($fields = null)
     {
         if (is_string($fields)) { // Comma Seperated List (eg Url Param)
             $fields = explode(',', $fields);
@@ -223,6 +250,15 @@ class Geo extends EloquentTreeItem
         }
 
         return $this;
+    }
+
+    /**
+     * old method with a typo, kept for backwards compatibility.
+     * @deprecated version
+     */
+    public function fliterFields($fields = null) 
+    {
+        return $this->filterFields($fields);
     }
 
     static public function filterAlternate($query, GeoalternateOptions $options) {

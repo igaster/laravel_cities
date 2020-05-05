@@ -141,7 +141,7 @@ Geo::getByIds([390903,3175395]);   // Get a Collection of items by Ids
 ```php
 $children    = $geo->getChildren();    // Get direct Children of $geo (Collection)
 $parent      = $geo->getParent();      // Get single Parent of $geo (Geo)
-$ancenstors  = $geo->getAncensors();   // Get Ancenstors tree of $geo from top->bottom (Collection)
+$ancestors  = $geo->getAncestors();   // Get Ancestors tree of $geo from top->bottom (Collection)
 $descendants = $geo->getDescendants(); // Get all Descentants of $geo alphabetic (Collection)
 ```
 
@@ -150,7 +150,7 @@ $descendants = $geo->getDescendants(); // Get all Descentants of $geo alphabetic
 ```php
 $geo1->isParentOf($geo2);       // (Bool) Check if $geo2 is direct Parent of $geo1
 $geo2->isChildOf($geo1);        // (Bool) Check if $geo2 is direct Child of $geo1
-$geo1->isAncenstorOf($geo2);    // (Bool) Check if $geo2 is Ancenstor of $geo1
+$geo1->isAncestorOf($geo2);    // (Bool) Check if $geo2 is Ancestor of $geo1
 $geo2->isDescendantOf($geo1);   // (Bool) Check if $geo2 is Descentant of $geo1
 ```
 
@@ -163,7 +163,7 @@ Geo::capital();         // (Shortcut) Items that are capitals
 Geo::search($name);     // Items that conain $name in name OR alternames (Case InSensitive)
 Geo::areDescentants($geo);   // Items that belong to $geo
 
-$geo->ancenstors();     // Items that contain $geo
+$geo->ancestors();     // Items that contain $geo
 $geo->descendants();    // Items that belong to $geo
 $geo->children();       // Items that are direct children of $geo
 

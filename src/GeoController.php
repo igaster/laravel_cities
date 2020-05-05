@@ -78,7 +78,7 @@ class GeoController extends Controller
     public function ancestors($id)
     {
         $current = Geo::find($id);
-        $ancestors = $current->ancenstors()->get()->sortBy('a1code')->values();
+        $ancestors = $current->ancestors()->get()->sortBy('a1code')->values();
         $ancestors->push($current);
 
         $result = collect();
@@ -114,7 +114,7 @@ class GeoController extends Controller
     public function breadcrumbs($id)
     {
         $current = Geo::find($id);
-        $ancestors = $current->ancenstors()->get();
+        $ancestors = $current->ancestors()->get();
         $ancestors->push($current);
 
         $ancestors = $this->applyFilter($ancestors);
@@ -138,13 +138,13 @@ class GeoController extends Controller
 
             $fields = $request->input('fields');
             if ($fields == 'all') {
-                $geo->fliterFields();
+                $geo->filterFields();
             } else {
                 $fields = explode(',', $fields);
                 array_walk($fields, function (&$item) {
                     $item = strtolower(trim($item));
                 });
-                $geo->fliterFields($fields);
+                $geo->filterFields($fields);
             }
         }
 
