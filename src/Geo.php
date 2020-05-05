@@ -211,9 +211,27 @@ class Geo extends EloquentTreeItem
         return $this;
     }
 
+    static public function filterAlternate($request, $query) {
+        if (!$request) {
+            return $query;
+        }
+        if ($request->has('isolanguage')) {
+            $query = $query->isoLanguage(
+                explode(',', $request->input('isolanguage'))
+            );
+        }
+        if ($request->has('isPreferredName')) {
+            $query = $query->isPreferredName(1);
+        }
+        if ($request->has('isShortName')) {
+            $query = $query->isShortName(1);
+        }
+        return $query;
+    }
+
     public function getGeoalternateAttribute()
     {
-        return $this->geoalternate()->get();
+        return static::filterAlternate(request(), $this->geoalternate())->get();
     }
 
     public function geoalternate()

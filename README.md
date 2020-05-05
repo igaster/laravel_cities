@@ -238,7 +238,7 @@ php -d memory_limit=8000M artisan geo:alternate --chunk=100000
 
 ## Filters 
 
-On the HTTP API you now have a few query options:
+On the HTTP API you now have a few query options to return alternate names:
 
 | URL Params (aplly to all routes)      | Description                            | Example                                                  |
 |---------------------------------------|----------------------------------------|----------------------------------------------------------|
@@ -247,24 +247,24 @@ On the HTTP API you now have a few query options:
 |geoalternate=true&isPreferredName=true | Returns only preferred names           | api/geo/countries?geoalternate=true&isPreferredName=true |
 |geoalternate=true&isShortName=true     | Returns only short names               | api/geo/countries?geoalternate=true&isShortName=true     |
 
-`geoalternate` is mandatory, the other options can be combined if you want. `isolanguages` accepts multiple languages separated by comma.
+`geoalternate=true` is mandatory to return alternate names, the other options can be combined if you want to filter. `isolanguages` accepts multiple languages separated by comma.
 
-The fields available on alternate names are the following:
+Results are returned in a `geoalternate` key. It's an array of object, whose fields are the following:
 
 ```
 alternateNameId   : the id of this alternate name, int
 geonameid         : geonameId referring to id in table 'geoname', int
 isolanguage       : iso 639 language code 2- or 3-characters; 4-characters 'post' for postal codes and 'iata','icao' and faac for airport codes, fr_1793 for French Revolution names,  abbr for abbreviation, link to a website (mostly to wikipedia), wkdt for the wikidataid, varchar(7)
 alternate name    : alternate name or name variant, varchar(400)
-isPreferredName   : '1', if this alternate name is an official/preferred name
-isShortName       : '1', if this is a short name like 'California' for 'State of California'
-isColloquial      : '1', if this alternate name is a colloquial or slang term. Example: 'Big Apple' for 'New York'.
-isHistoric        : '1', if this alternate name is historic and was used in the past. Example 'Bombay' for 'Mumbai'.
+isPreferredName   : '1', if this alternate name is an official/preferred name, int
+isShortName       : '1', if this is a short name like 'California' for 'State of California', int
+isColloquial      : '1', if this alternate name is a colloquial or slang term. Example: 'Big Apple' for 'New York', int
+isHistoric        : '1', if this alternate name is historic and was used in the past. Example 'Bombay' for 'Mumbai', int
 from		  : from period when the name was used
 to		  : to period when the name was used
 ```
 
-Avoid getting all the geoalternatenames without extra filters, as it can be a lot of data.
+Avoid getting all the geoalternate names without extra filters, as it can be a lot of data.
 
 # Vue Component
 

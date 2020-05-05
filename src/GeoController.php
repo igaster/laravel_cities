@@ -118,17 +118,7 @@ class GeoController extends Controller
         if ($request->has('geoalternate')) {
             $selector->with([
                 'geoalternate' => function($query) use ($request) {
-                    if ($request->has('isolanguage')) {
-                        $query = $query->isoLanguage(
-                            explode(',', $request->input('isolanguage'))
-                        );
-                    }
-                    if ($request->has('isPreferredName')) {
-                        $query = $query->isPreferredName(1);
-                    }
-                    if ($request->has('isShortName')) {
-                        $query = $query->isShortName(1);
-                    }
+                    $query = Geo::filterAlternate($request, $query);
                 }
             ]);
         }
@@ -165,24 +155,7 @@ class GeoController extends Controller
             if (get_class($geo) == Collection::class) {
                 return $geo;
             }
-
-            $alternate = Geoalternate::geonameid($geo->id);
-            $alternate->with([
-                'geoalternate' => function($query) use ($request) {
-                    if ($request->has('isolanguage')) {
-                        $query = $query->isoLanguage(
-                            explode(',', $request->input('isolanguage'))
-                        );
-                    }
-                    if ($request->has('isPreferredName')) {
-                        $query = $query->isPreferredName(1);
-                    }
-                    if ($request->has('isShortName')) {
-                        $query = $query->isShortName(1);
-                    }
-                }
-            ]);
-            $geo->alternate = $alternate;
+            $geo->append('geoalternate');
         }
 
         return $geo;
