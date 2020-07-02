@@ -210,8 +210,10 @@ class seedGeoFile extends Command
         // Store Tree in DB
         //$this->writeToDb();
         
-        //Lets get back FOREIGN_KEY_CHECKS to laravel
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        //Lets get back MySQL FOREIGN_KEY_CHECKS to laravel
+        if(DB::connection()->getDriverName() === 'mysql') {
+            DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        }
 
         $this->info(PHP_EOL . ' Relation checks enabled');
 
