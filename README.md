@@ -141,8 +141,8 @@ Geo::getByIds([390903,3175395]);   // Get a Collection of items by Ids
 ```php
 $children    = $geo->getChildren();    // Get direct Children of $geo (Collection)
 $parent      = $geo->getParent();      // Get single Parent of $geo (Geo)
-$ancenstors  = $geo->getAncensors();   // Get Ancenstors tree of $geo from top->bottom (Collection)
-$descendants = $geo->getDescendants(); // Get all Descentants of $geo alphabetic (Collection)
+$ancestors  = $geo->getAncestors();   // Get Ancestors tree of $geo from top->bottom (Collection)
+$descendants = $geo->getDescendants(); // Get all Descendants of $geo alphabetic (Collection)
 ```
 
 
@@ -150,8 +150,8 @@ $descendants = $geo->getDescendants(); // Get all Descentants of $geo alphabetic
 ```php
 $geo1->isParentOf($geo2);       // (Bool) Check if $geo2 is direct Parent of $geo1
 $geo2->isChildOf($geo1);        // (Bool) Check if $geo2 is direct Child of $geo1
-$geo1->isAncenstorOf($geo2);    // (Bool) Check if $geo2 is Ancenstor of $geo1
-$geo2->isDescendantOf($geo1);   // (Bool) Check if $geo2 is Descentant of $geo1
+$geo1->isAncestorOf($geo2);    // (Bool) Check if $geo2 is Ancestor of $geo1
+$geo2->isDescendantOf($geo1);   // (Bool) Check if $geo2 is Descendant of $geo1
 ```
 
 ## Query scopes (Use them to Build custom queries)
@@ -161,9 +161,9 @@ Geo::level($level);     // Filter by Administration level:
 Geo::country('US');     // (Shortcut) Items that belongs to country US 
 Geo::capital();         // (Shortcut) Items that are capitals
 Geo::search($name);     // Items that conain $name in name OR alternames (Case InSensitive)
-Geo::areDescentants($geo);   // Items that belong to $geo
+Geo::areDescendants($geo);   // Items that belong to $geo
 
-$geo->ancenstors();     // Items that contain $geo
+$geo->ancestors();     // Items that contain $geo
 $geo->descendants();    // Items that belong to $geo
 $geo->children();       // Items that are direct children of $geo
 
@@ -216,6 +216,55 @@ To reduce bandwith, all Geo model attributes will be returned except from `alter
 |fields=field1,field2               | Returns only the specified attributes   | api/geo/countries?fields=id,name|
 |fields=all                         | Returns all attributes                  | api/geo/countries?fields=all    |
 
+
+# Alternate names
+
+If you need localization/internationalization you can use the alternate names table. This is not loaded by default.
+
+- Download with alternate names:
+```
+artisan geo:download --alternate
+```
+
+- Seed. Run:
+```
+artisan geo:alternate
+```
+
+Like before, you can increase the memory limit for the cli invocation on demand to have process the command at once.
+```
+php -d memory_limit=8000M artisan geo:alternate --chunk=100000
+```
+
+## Filters 
+
+On the HTTP API you now have a few query options to return alternate names:
+
+| URL Params (aplly to all routes)      | Description                            | Example                                                  |
+|---------------------------------------|----------------------------------------|----------------------------------------------------------|
+|geoalternate=true                      | Returns the alternate names            | api/geo/countries?geoalternate=true                      |
+|geoalternate=true&isolanguage=x        | Returns only English alternate names   | api/geo/countries?geoalternate=true&isolanguage=pt,br    |
+|geoalternate=true&isPreferredName=true | Returns only preferred names           | api/geo/countries?geoalternate=true&isPreferredName=true |
+|geoalternate=true&isShortName=true     | Returns only short names               | api/geo/countries?geoalternate=true&isShortName=true     |
+
+`geoalternate=true` is mandatory to return alternate names, the other options can be combined if you want to filter. `isolanguages` accepts multiple languages separated by comma.
+
+Results are returned in a `geoalternate` key. It's an array of object, whose fields are the following:
+
+```
+alternateNameId   : the id of this alternate name, int
+geonameid         : geonameId referring to id in table 'geoname', int
+isolanguage       : iso 639 language code 2- or 3-characters; 4-characters 'post' for postal codes and 'iata','icao' and faac for airport codes, fr_1793 for French Revolution names,  abbr for abbreviation, link to a website (mostly to wikipedia), wkdt for the wikidataid, varchar(7)
+alternate name    : alternate name or name variant, varchar(400)
+isPreferredName   : '1', if this alternate name is an official/preferred name, int
+isShortName       : '1', if this is a short name like 'California' for 'State of California', int
+isColloquial      : '1', if this alternate name is a colloquial or slang term. Example: 'Big Apple' for 'New York', int
+isHistoric        : '1', if this alternate name is historic and was used in the past. Example 'Bombay' for 'Mumbai', int
+from		  : from period when the name was used
+to		  : to period when the name was used
+```
+
+Avoid getting all the geoalternate names without extra filters, as it can be a lot of data.
 
 # Vue Component
 
@@ -283,3 +332,4 @@ The following inputs will be submited:
 	:enable-breadcrumb = "true"       <!-- Enable/Disable Breadcrumb -->
 ></geo-select>
 ```
+

@@ -2,16 +2,26 @@
 
 namespace Igaster\LaravelCities;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Response;
 
 class GeoController extends Controller
 {
+
+    public function __construct()
+    {
+        Geo::$geoalternateOptions = new GeoalternateOptions(request());
+    }
+
     // [Geo] Get an item by $id
     public function item($id)
     {
         $geo = Geo::find($id);
+        if (Geo::$geoalternateOptions->alternateNames) {
+            $geo->append('geoalternate');
+        }
         $this->applyFilter($geo);
         return Response::json($geo);
     }
@@ -52,7 +62,8 @@ class GeoController extends Controller
     // [Collection] Get all countries
     public function countries()
     {
-        return $this->applyFilter(Geo::level(Geo::LEVEL_COUNTRY)->get());
+        $countries = Geo::level(Geo::LEVEL_COUNTRY);
+        return $this->applyFilter($countries->get());
     }
 
     // [Collection] Search for %$name% in 'name' and 'alternames'. Optional filter to children of $parent_id
@@ -67,7 +78,7 @@ class GeoController extends Controller
     public function ancestors($id)
     {
         $current = Geo::find($id);
-        $ancestors = $current->ancenstors()->get()->sortBy('a1code')->values();
+        $ancestors = $current->ancestors()->get()->sortBy('a1code')->values();
         $ancestors->push($current);
 
         $result = collect();
@@ -103,7 +114,7 @@ class GeoController extends Controller
     public function breadcrumbs($id)
     {
         $current = Geo::find($id);
-        $ancestors = $current->ancenstors()->get();
+        $ancestors = $current->ancestors()->get();
         $ancestors->push($current);
 
         $ancestors = $this->applyFilter($ancestors);
@@ -115,7 +126,8 @@ class GeoController extends Controller
     // api/call?fields=field1,field2
     protected function applyFilter($geo)
     {
-        if (request()->has('fields')) {
+        $request = request();
+        if ($request->has('fields')) {
             if (get_class($geo) == Collection::class) {
                 foreach ($geo as $item) {
                     $this->applyFilter($item);
@@ -124,15 +136,15 @@ class GeoController extends Controller
                 return $geo;
             }
 
-            $fields = request()->input('fields');
+            $fields = $request->input('fields');
             if ($fields == 'all') {
-                $geo->fliterFields();
+                $geo->filterFields();
             } else {
                 $fields = explode(',', $fields);
                 array_walk($fields, function (&$item) {
                     $item = strtolower(trim($item));
                 });
-                $geo->fliterFields($fields);
+                $geo->filterFields($fields);
             }
         }
 

@@ -3,6 +3,7 @@
 namespace Igaster\LaravelCities;
 
 use Igaster\LaravelCities\dbTree\EloquentTreeItem;
+use Illuminate\Support\Facades\Request;
 
 class Geo extends EloquentTreeItem
 {
@@ -25,33 +26,46 @@ class Geo extends EloquentTreeItem
     // Hide From JSON
     protected $hidden = ['alternames', 'left', 'right', 'depth'];
 
+    protected $alternate = null;
+
+    static public $geoalternateOptions = null;
+
     // ----------------------------------------------
     //  Scopes
     // ----------------------------------------------
 
     public function scopeCountry($query, $countryCode)
     {
-        return $query->where('country', $countryCode);
+        return $query->where('country', $countryCode)->alternateNames();
     }
 
     public function scopeCapital($query)
     {
-        return $query->where('level', self::LEVEL_CAPITAL);
+        return $query->where('level', self::LEVEL_CAPITAL)->alternateNames();
     }
 
     public function scopeLevel($query, $level)
     {
-        return $query->where('level', $level);
+        return $query->where('level', $level)->alternateNames();
     }
 
     public function scopeDescendants($query)
     {
-        return $query->where('left', '>', $this->left)->where('right', '<', $this->right);
+        return $query->where('left', '>', $this->left)->where('right', '<', $this->right)->alternateNames();
     }
 
+    public function scopeAncestors($query)
+    {
+        return $query->where('left', '<', $this->left)->where('right', '>', $this->right)->alternateNames();
+    }
+    
+    /**
+     * old method with a typo, kept for backwards compatibility.
+     * @deprecated
+     */
     public function scopeAncenstors($query)
     {
-        return $query->where('left', '<', $this->left)->where('right', '>', $this->right);
+        return $this->scopeAncestors($query);
     }
 
     public function scopeChildren($query)
@@ -60,7 +74,7 @@ class Geo extends EloquentTreeItem
             $query->where('left', '>', $this->left)
                 ->where('right', '<', $this->right)
                 ->where('depth', $this->depth + 1);
-        });
+        })->alternateNames();
     }
 
     public function scopeSearch($query, $search)
@@ -73,12 +87,28 @@ class Geo extends EloquentTreeItem
         });
     }
 
-    public function scopeAreDescentants($query, Geo $parent)
+    public function scopeAreDescendants($query, Geo $parent)
     {
         return $query->where(function ($query) use ($parent) {
             $query->where('left', '>', $parent->left)
                 ->where('right', '<', $parent->right);
         });
+    }
+
+    public function scopeAreDescentants($query, Geo $parent)
+    {
+        return $this->scopeAreDescendants($query, $parent);
+    }
+
+    public static function scopeAlternatenames($query) {
+        if (static::$geoalternateOptions->alternateNames) {
+            return $query->with([
+                'geoalternate' => function ($query) {
+                    $query = Geo::filterAlternate($query, Geo::$geoalternateOptions);
+                }
+            ]);
+        }
+        return $query;
     }
 
     public function scopeTest($query)
@@ -108,7 +138,7 @@ class Geo extends EloquentTreeItem
         $query = self::search($name)->orderBy('name', 'ASC');
 
         if ($parent) {
-            $query->areDescentants($parent);
+            $query->areDescendants($parent);
         }
 
         return $query->get();
@@ -151,9 +181,18 @@ class Geo extends EloquentTreeItem
     }
 
     // is Parent of $item (any depth) ?
-    public function isAncenstorOf(Geo $item)
+    public function isAncestorOf(Geo $item)
     {
         return ($this->left < $item->left) && ($this->right > $item->right);
+    }
+
+    /**
+     * old method with a typo, kept for backwards compatibility.
+     * @deprecated 
+     */
+    public function isAncenstorOf(Geo $item)
+    {
+        return $this->isAncestorOf($item);
     }
 
     // retrieve by name
@@ -171,13 +210,22 @@ class Geo extends EloquentTreeItem
     // get Parent (Geo)
     public function getParent()
     {
-        return self::ancenstors()->where('depth', $this->depth - 1)->first();
+        return self::find($this->parent_id);
     }
 
     // get all Ancnstors (Collection) ordered by level (Country -> City)
+    public function getAncestors()
+    {
+        return self::ancestors()->orderBy('depth')->get();
+    }
+
+    /**
+     * old method with a typo, kept for backwards compatibility.
+     * @deprecated
+     */
     public function getAncensors()
     {
-        return self::ancenstors()->orderBy('depth')->get();
+        return $this->getAncestors();
     }
 
     // get all Descendants (Collection) Alphabetical
@@ -187,7 +235,7 @@ class Geo extends EloquentTreeItem
     }
 
     // Return only $fields as Json. null = Show all
-    public function fliterFields($fields = null)
+    public function filterFields($fields = null)
     {
         if (is_string($fields)) { // Comma Seperated List (eg Url Param)
             $fields = explode(',', $fields);
@@ -209,6 +257,41 @@ class Geo extends EloquentTreeItem
         return $this;
     }
 
+    /**
+     * old method with a typo, kept for backwards compatibility.
+     * @deprecated version
+     */
+    public function fliterFields($fields = null) 
+    {
+        return $this->filterFields($fields);
+    }
+
+    static public function filterAlternate($query, GeoalternateOptions $options) {
+        if (!$options->alternateNames) {
+            return $query;
+        }
+        if ($options->isolanguage) {
+            $query = $query->isoLanguage($options->isolanguage);
+        }
+        if ($options->isPreferredName) {
+            $query = $query->isPreferredName(1);
+        }
+        if ($options->isShortName) {
+            $query = $query->isShortName(1);
+        }
+        return $query;
+    }
+
+    public function getGeoalternateAttribute()
+    {
+        return static::filterAlternate($this->geoalternate(), static::$geoalternateOptions)->get();
+    }
+
+    public function geoalternate()
+    {
+        return $this->hasMany(Geoalternate::class, 'geonameid');
+    }
+
     // ----------------------------------------------
     //  Routes
     // ----------------------------------------------
@@ -218,3 +301,5 @@ class Geo extends EloquentTreeItem
         require_once __DIR__ . '/routes.php';
     }
 }
+
+Geo::$geoalternateOptions = new GeoalternateOptions();

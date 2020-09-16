@@ -13,7 +13,7 @@ use Symfony\Component\Console\Helper\ProgressBar;
 
 class seedGeoFile extends Command
 {
-    protected $signature = 'geo:seed {country?} {--append} {--chunk=1000}';
+    protected $signature = 'geo:seed {country?} {--append} {--chunk=1000} {--insertSize=1000}';
     protected $description = 'Load + Parse + Save to DB a geodata file.';
 
     private $pdo;
@@ -24,6 +24,12 @@ class seedGeoFile extends Command
     private $batch = 0;
 
     private $chunkSize = 1000;
+
+    private $insertSize = 1000;
+
+    private $columns = [
+        'id', 'parent_id', 'left', 'right', 'depth', 'name', 'alternames', 'country', 'a1code', 'level', 'population', 'lat', 'long', 'timezone',
+    ];
 
     public function __construct()
     {
@@ -78,25 +84,27 @@ class seedGeoFile extends Command
 
     protected function getColumnsAsStringDelimated($delimeter = '"', bool $onlyPrefix = false)
     {
-        $columns = [
-            'id', 'parent_id', 'left', 'right', 'depth', 'name', 'alternames', 'country', 'a1code', 'level', 'population', 'lat', 'long', 'timezone',
-        ];
-
         $modifiedColumns = [];
 
-        foreach ($columns as $column) {
+        foreach ($this->columns as $column) {
             $modifiedColumns[] = $delimeter . $column . (($onlyPrefix) ? '' : $delimeter);
         }
         
         return implode(',', $modifiedColumns);
     }
 
-    public function getDBStatement() : array
+    public function getDBStatement($totalItems) : array
     {
-        $sql = "INSERT INTO {$this->getFullyQualifiedTableName()} ( {$this->getColumnsAsStringDelimated()} ) VALUES ( {$this->getColumnsAsStringDelimated(':', true)} )";
-        
+        $strItem = "(" . implode(',', array_fill(0, count($this->columns), '?')) . ")";
+        $totalItems = implode(',', array_fill(0, $totalItems, $strItem));
+       
         if ($this->driver == 'mysql') {
-            $sql = "INSERT INTO {$this->getFullyQualifiedTableName()} ( {$this->getColumnsAsStringDelimated('`')} ) VALUES ( {$this->getColumnsAsStringDelimated(':', true)} )";
+            $sql = "INSERT INTO {$this->getFullyQualifiedTableName()} ( {$this->getColumnsAsStringDelimated('`')} ) VALUES " .
+                $totalItems;
+        }
+        else {
+            $sql = "INSERT INTO {$this->getFullyQualifiedTableName()} ( {$this->getColumnsAsStringDelimated()} ) VALUES " .
+                $totalItems;
         }
 
         return [$this->pdo->prepare($sql), $sql];
@@ -285,42 +293,75 @@ class seedGeoFile extends Command
     public function writeToDb()
     {
         // Store Tree in DB
-        $this->info('Writing in Database</info>');
+        // $this->info('Writing in Database');
         
-        [$stmt, $sql] = $this->getDBStatement();
+        [$stmt, $sql] = $this->getDBStatement($this->insertSize);
 
         $count = 0;
+
         $totalCount = count($this->geoItems->items);
 
-        $progressBar = new ProgressBar($this->output, 100);
+        // $progressBar = new ProgressBar($this->output, 100);
 
+        $batch = [];
+
+        $totalToCommit = $this->insertSize * count($this->columns);
+        
         foreach ($this->geoItems->items as $item) {
-            $params = [
-                ':id' => $item->getId(),
-                ':parent_id' => $item->parentId,
-                ':left' => $item->left,
-                ':right' => $item->right,
-                ':depth' => $item->depth,
-                ':name' => substr($item->data[2], 0, 40),
-                ':alternames' => $item->data[3],
-                ':country' => $item->data[8],
-                ':a1code' => $item->data[10],
-                ':level' => $item->data[7],
-                ':population' => $item->data[14],
-                ':lat' => $item->data[4],
-                ':long' => $item->data[5],
-                ':timezone' => $item->data[17],
-            ];
+            // $params = [
+            //     ':id' => $item->getId(),
+            //     ':parent_id' => $item->parentId,
+            //     ':left' => $item->left,
+            //     ':right' => $item->right,
+            //     ':depth' => $item->depth,
+            //     ':name' => substr($item->data[2], 0, 40),
+            //     ':alternames' => $item->data[3],
+            //     ':country' => $item->data[8],
+            //     ':a1code' => $item->data[10],
+            //     ':level' => $item->data[7],
+            //     ':population' => $item->data[14],
+            //     ':lat' => $item->data[4],
+            //     ':long' => $item->data[5],
+            //     ':timezone' => $item->data[17],
+            // ];
 
-            if ($stmt->execute($params) === false) {
-                $error = "Error in SQL : '$sql'\n" . PDO::errorInfo() . "\nParams: \n$params";
-                throw new Exception($error, 1);
+            array_push($batch,
+                $item->getId(),
+                $item->parentId,
+                $item->left,
+                $item->right,
+                $item->depth,
+                substr($item->data[2], 0, 40),
+                $item->data[3],
+                $item->data[8],
+                $item->data[10],
+                $item->data[7],
+                $item->data[14],
+                $item->data[4],
+                $item->data[5],
+                $item->data[17],
+            );
+
+            if (count($batch) >= $totalToCommit) {
+                if ($stmt->execute($batch) === false) {
+                    $error = "Error in SQL : '$sql'\n" . print_r($stmt->errorInfo(), true) . "\n";
+                    throw new Exception($error, 1);
+                }
+                $batch = [];
             }
 
             $progress = $count++ / $totalCount * 100;
-            $progressBar->setProgress($progress);
+            // $progressBar->setProgress($progress);
         }
 
-        $progressBar->finish();
+        if (count($batch)) {
+            [$stmt, $sql] = $this->getDBStatement(count($batch)/count($this->columns));
+            if ($stmt->execute($batch) === false) {
+                $error = "Error in SQL : '$sql'\n" . print_r($stmt->errorInfo(), true) . "\n";
+                throw new Exception($error, 1);
+            }
+        }
+        // $progressBar->finish();
     }
+
 }

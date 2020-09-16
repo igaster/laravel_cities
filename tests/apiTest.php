@@ -3,6 +3,7 @@
 namespace Igaster\LaravelCities\Tests;
 
 use Igaster\LaravelCities\Geo;
+use Illuminate\Support\Facades\Request;
 
 class apiTest extends abstractTest
 {
@@ -31,7 +32,7 @@ class apiTest extends abstractTest
         $request = Request::create($url, 'GET');
         $response = \App::handle($request);
         if ($response->status() !== 200) {
-            throw new Exception("API Call to [$url] returned status code " . $response->status() . "\n--------------[Output]--------------\n" . strip_tags(substr($response->getContent(), strpos($response->getContent(), '<body'))), 1);
+            throw new \Exception("API Call to [$url] returned status code " . $response->status() . "\n--------------[Output]--------------\n" . strip_tags(substr($response->getContent(), strpos($response->getContent(), '<body'))), 1);
         }
         return json_decode($response->getContent());
     }
