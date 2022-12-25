@@ -61,17 +61,17 @@ class geoTest extends abstractTest
         $this->assertFalse($geo1->isChildOf($geo2));
     }
 
-    //-- Test: isAncenstorOf() isDescendantOf()
-    public function testRelationAncenstorDescentant()
+    //-- Test: isAncestorOf() isDescendantOf()
+    public function testRelationAncestorDescendant()
     {
         $geo1 = Geo::findName('Ionian Islands');
         $geo2 = Geo::findName('Nomos Kerkyras');
         $geo3 = Geo::findName('Dimos Corfu');
 
-        $this->assertTrue($geo1->isAncenstorOf($geo2));
-        $this->assertTrue($geo2->isAncenstorOf($geo3));
-        $this->assertTrue($geo1->isAncenstorOf($geo3));
-        $this->assertFalse($geo2->isAncenstorOf($geo1));
+        $this->assertTrue($geo1->isAncestorOf($geo2));
+        $this->assertTrue($geo2->isAncestorOf($geo3));
+        $this->assertTrue($geo1->isAncestorOf($geo3));
+        $this->assertFalse($geo2->isAncestorOf($geo1));
 
         $this->assertTrue($geo2->isDescendantOf($geo1));
         $this->assertTrue($geo3->isDescendantOf($geo2));
@@ -79,7 +79,7 @@ class geoTest extends abstractTest
         $this->assertFalse($geo1->isDescendantOf($geo2));
     }
 
-    //-- Test: getChildren(), getParent(), getAncensors()
+    //-- Test: getChildren(), getParent(), getAncestors()
     public function testTravelTree()
     {
         $children = Geo::findName('Ionian Islands')->getChildren();
@@ -95,11 +95,11 @@ class geoTest extends abstractTest
         $parent = Geo::findName('Nomos Kerkyras')->getParent();
         $this->assertEquals('Ionian Islands', $parent->name);
 
-        $ancenstors = Geo::findName('Dimos Corfu')->getAncensors();
+        $ancestors = Geo::findName('Dimos Corfu')->getAncestors();
 
-        $this->assertEquals('Hellenic Republic', $ancenstors[0]->name);
-        $this->assertEquals('Ionian Islands', $ancenstors[1]->name);
-        $this->assertEquals('Nomos Kerkyras', $ancenstors[2]->name);
+        $this->assertEquals('Hellenic Republic', $ancestors[0]->name);
+        $this->assertEquals('Ionian Islands', $ancestors[1]->name);
+        $this->assertEquals('Nomos Kerkyras', $ancestors[2]->name);
     }
 
     //-- Test: JSON field alternames returns an Array
@@ -270,13 +270,13 @@ class geoTest extends abstractTest
             'long',
         ], $result);
 
-        $result = Geo::findName('Ionian Islands')->fliterFields(['name', 'country'])->toArray();
+        $result = Geo::findName('Ionian Islands')->filterFields(['name', 'country'])->toArray();
         $this->assertArrayHasKeysOnly([
             'name',
             'country',
         ], $result);
 
-        $result = Geo::findName('Ionian Islands')->fliterFields()->toArray();
+        $result = Geo::findName('Ionian Islands')->filterFields()->toArray();
         $this->assertArrayHasKeysOnly([
             'id',
             'parent_id',

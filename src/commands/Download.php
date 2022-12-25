@@ -8,12 +8,13 @@ class Download extends Command
 {
     public const ALL_COUNTRIES = 'all';
 
-    protected $signature = 'geo:download {--countries='.self::ALL_COUNTRIES.'}';
-    protected $description = 'Download a *.txt files from geonames.org By default it will download allcountries and hierarchy files';
+    protected $signature = 'geo:download {--countries='.self::ALL_COUNTRIES.'} {--alternate}';
+    protected $description = 'Download a *.txt files from geonames.org By default it will download allcountries and hierarchy files, but not the alternate names.';
 
     public function getFileNames() : array
     {
         $countries = $this->option('countries');
+        $alternate = $this->option('alternate');
 
         $files = ['hierarchy.zip', 'admin1CodesASCII.txt'];
 
@@ -25,6 +26,9 @@ class Download extends Command
             foreach ($countries as $country) {
                 $files[] = "$country.zip";
             }
+        }
+        if ($alternate) {
+            $files[] = "alternateNamesV2.zip";
         }
 
         return $files;

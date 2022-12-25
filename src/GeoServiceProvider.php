@@ -33,7 +33,9 @@ class GeoServiceProvider extends ServiceProvider
                 \Igaster\LaravelCities\commands\seedGeoFile::class,
                 \Igaster\LaravelCities\commands\seedJsonFile::class,
                 \Igaster\LaravelCities\commands\BuildPplTree::class,
-                \Igaster\LaravelCities\commands\Download::class,            ]);
+                \Igaster\LaravelCities\commands\Download::class,
+                \Igaster\LaravelCities\commands\seedAlternateNames::class
+            ]);
 
         }
     }
